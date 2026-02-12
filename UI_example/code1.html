@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Guardian OS | Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --bg-main: #0B0B0C;
+            --card-bg: #0B0B0C;
+            --border-color: #27272A;
+            --primary: #FFFFFF;
+            --text-main: #FAFAFA;
+            --text-muted: #A1A1AA;
+            --sidebar-width: 64px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 10px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+        }
+        tr:hover td {
+            background-color: #121214;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#FFFFFF",
+                        background: "#0B0B0C",
+                        card: "#0B0B0C",
+                        border: "#27272A",
+                        muted: "#A1A1AA",
+                        main: "#FAFAFA"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="antialiased h-screen overflow-hidden flex">
+<aside class="w-16 flex flex-col items-center border-r border-border bg-background py-6 z-20">
+<div class="mb-10">
+<div class="w-8 h-8 bg-white rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-black font-bold">terminal</span>
+</div>
+</div>
+<nav class="flex flex-col gap-6 items-center flex-1">
+<a class="text-white hover:text-white transition-colors p-2 rounded-lg bg-white/5 border border-white/10" href="#" title="Dashboard">
+<span class="material-symbols-outlined !text-[22px]">dashboard</span>
+</a>
+<a class="text-muted hover:text-white transition-colors p-2" href="#" title="Classrooms">
+<span class="material-symbols-outlined !text-[22px]">apartment</span>
+</a>
+<a class="text-muted hover:text-white transition-colors p-2" href="#" title="Devices">
+<span class="material-symbols-outlined !text-[22px]">devices</span>
+</a>
+<a class="text-muted hover:text-white transition-colors p-2" href="#" title="Security">
+<span class="material-symbols-outlined !text-[22px]">shield</span>
+</a>
+<a class="text-muted hover:text-white transition-colors p-2" href="#" title="Settings">
+<span class="material-symbols-outlined !text-[22px]">settings</span>
+</a>
+</nav>
+<div class="mt-auto">
+<div class="w-8 h-8 rounded-full bg-border border border-white/10 flex items-center justify-center text-[10px] font-bold">AD</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0 bg-background">
+<header class="h-14 border-b border-border flex items-center justify-between px-8 bg-background/80 backdrop-blur-md">
+<div class="flex items-center gap-4">
+<h1 class="text-sm font-medium tracking-tight">System Infrastructure</h1>
+<span class="h-4 w-[1px] bg-border mx-2"></span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/5">
+<div class="w-1 h-1 rounded-full bg-emerald-500"></div>
+<span class="text-[10px] text-emerald-500 font-medium uppercase tracking-wider">Operational</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-muted !text-[16px]">search</span>
+<input class="bg-white/5 border-border border rounded-md pl-9 pr-4 py-1 text-xs w-48 focus:ring-1 focus:ring-white/20 focus:border-white/20 outline-none transition-all placeholder:text-muted/50" placeholder="Search objects..." type="text"/>
+</div>
+<button class="bg-white text-black text-xs font-semibold px-3 py-1.5 rounded-md hover:bg-zinc-200 transition-colors">
+                Deploy Device
+            </button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<div class="max-w-[1400px] mx-auto p-12 space-y-16">
+<section class="grid grid-cols-3 gap-12">
+<div class="space-y-4">
+<p class="text-muted text-[11px] font-semibold uppercase tracking-[0.2em]">Total Connected Assets</p>
+<div class="flex items-baseline gap-3">
+<span class="text-5xl font-bold tracking-tighter">1,284</span>
+<span class="text-emerald-500 text-xs font-medium">+4.2%</span>
+</div>
+</div>
+<div class="space-y-4">
+<p class="text-muted text-[11px] font-semibold uppercase tracking-[0.2em]">Network Load</p>
+<div class="flex items-baseline gap-3">
+<span class="text-5xl font-bold tracking-tighter">24.8%</span>
+<span class="text-muted text-xs font-medium">Stable</span>
+</div>
+</div>
+<div class="space-y-4">
+<p class="text-muted text-[11px] font-semibold uppercase tracking-[0.2em]">Active Incidents</p>
+<div class="flex items-baseline gap-3">
+<span class="text-5xl font-bold tracking-tighter">03</span>
+<span class="text-rose-500 text-xs font-medium">Action Required</span>
+</div>
+</div>
+</section>
+<section class="space-y-6">
+<div class="flex items-center justify-between border-b border-border pb-4">
+<h2 class="text-xl font-medium tracking-tight">Active Fleet Registry</h2>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 px-3 py-1.5 text-xs text-muted hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-[16px]">filter_list</span>
+                            Filter
+                        </button>
+<button class="flex items-center gap-2 px-3 py-1.5 text-xs text-muted hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-[16px]">download</span>
+                            Export
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="text-muted text-[11px] font-semibold uppercase tracking-widest">
+<th class="pb-6 font-medium">Device Identifier</th>
+<th class="pb-6 font-medium">Environment</th>
+<th class="pb-6 font-medium">Connection</th>
+<th class="pb-6 font-medium">Interface IP</th>
+<th class="pb-6 font-medium">Health Index</th>
+<th class="pb-6 font-medium text-right pr-4">Options</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr class="border-b border-border/40 group transition-all">
+<td class="py-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded border border-border flex items-center justify-center bg-white/5">
+<span class="material-symbols-outlined !text-[16px]">laptop_mac</span>
+</div>
+<div>
+<p class="font-medium text-main">MB-S314-01</p>
+<p class="text-[11px] text-muted">macOS 14.2.1</p>
+</div>
+</div>
+</td>
+<td class="py-8">
+<span class="text-muted">Science Lab</span>
+<span class="mx-2 text-border">/</span>
+<span class="text-main/80 text-xs">Area A</span>
+</td>
+<td class="py-8">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+<span class="text-[11px] text-muted font-medium uppercase tracking-tight">Online</span>
+</div>
+</td>
+<td class="py-8 font-mono text-xs text-muted">192.168.1.104</td>
+<td class="py-8">
+<div class="flex items-center gap-3">
+<div class="w-24 h-0.5 bg-border rounded-full overflow-hidden">
+<div class="h-full bg-main w-[98%]"></div>
+</div>
+<span class="text-[10px] text-muted font-mono">98%</span>
+</div>
+</td>
+<td class="py-8 text-right pr-4">
+<button class="material-symbols-outlined text-muted hover:text-white transition-colors">more_horiz</button>
+</td>
+</tr>
+<tr class="border-b border-border/40 group transition-all">
+<td class="py-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded border border-border flex items-center justify-center bg-white/5">
+<span class="material-symbols-outlined !text-[16px]">tv</span>
+</div>
+<div>
+<p class="font-medium text-main">SB-H102-DISPLAY</p>
+<p class="text-[11px] text-muted">Firmware v2.4</p>
+</div>
+</div>
+</td>
+<td class="py-8">
+<span class="text-muted">History Room</span>
+<span class="mx-2 text-border">/</span>
+<span class="text-main/80 text-xs">Main Wall</span>
+</td>
+<td class="py-8">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+<span class="text-[11px] text-muted font-medium uppercase tracking-tight">Low Battery</span>
+</div>
+</td>
+<td class="py-8 font-mono text-xs text-muted">192.168.1.112</td>
+<td class="py-8">
+<div class="flex items-center gap-3">
+<div class="w-24 h-0.5 bg-border rounded-full overflow-hidden">
+<div class="h-full bg-amber-500 w-[12%]"></div>
+</div>
+<span class="text-[10px] text-muted font-mono">12%</span>
+</div>
+</td>
+<td class="py-8 text-right pr-4">
+<button class="material-symbols-outlined text-muted hover:text-white transition-colors">more_horiz</button>
+</td>
+</tr>
+<tr class="border-b border-border/40 group transition-all">
+<td class="py-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded border border-border flex items-center justify-center bg-white/5">
+<span class="material-symbols-outlined !text-[16px]">tablet_mac</span>
+</div>
+<div>
+<p class="font-medium text-main">IPAD-ART-12</p>
+<p class="text-[11px] text-muted">iOS 17.1</p>
+</div>
+</div>
+</td>
+<td class="py-8">
+<span class="text-muted">Art Studio</span>
+<span class="mx-2 text-border">/</span>
+<span class="text-main/80 text-xs">Zone B</span>
+</td>
+<td class="py-8">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+<span class="text-[11px] text-muted font-medium uppercase tracking-tight">Online</span>
+</div>
+</td>
+<td class="py-8 font-mono text-xs text-muted">192.168.2.45</td>
+<td class="py-8">
+<div class="flex items-center gap-3">
+<div class="w-24 h-0.5 bg-border rounded-full overflow-hidden">
+<div class="h-full bg-main w-[85%]"></div>
+</div>
+<span class="text-[10px] text-muted font-mono">85%</span>
+</div>
+</td>
+<td class="py-8 text-right pr-4">
+<button class="material-symbols-outlined text-muted hover:text-white transition-colors">more_horiz</button>
+</td>
+</tr>
+<tr class="border-b border-border/40 group transition-all">
+<td class="py-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded border border-border flex items-center justify-center bg-white/5">
+<span class="material-symbols-outlined !text-[16px]">videocam</span>
+</div>
+<div>
+<p class="font-medium text-main">CAM-HALL-W</p>
+<p class="text-[11px] text-muted">IP Camera</p>
+</div>
+</div>
+</td>
+<td class="py-8">
+<span class="text-muted">West Corridor</span>
+<span class="mx-2 text-border">/</span>
+<span class="text-main/80 text-xs">Pillar 4</span>
+</td>
+<td class="py-8">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+<span class="text-[11px] text-muted font-medium uppercase tracking-tight">Disconnected</span>
+</div>
+</td>
+<td class="py-8 font-mono text-xs text-muted">192.168.1.05</td>
+<td class="py-8">
+<div class="flex items-center gap-3">
+<div class="w-24 h-0.5 bg-border rounded-full overflow-hidden">
+<div class="h-full bg-rose-500 w-[0%]"></div>
+</div>
+<span class="text-[10px] text-muted font-mono">0%</span>
+</div>
+</td>
+<td class="py-8 text-right pr-4">
+<button class="material-symbols-outlined text-muted hover:text-white transition-colors">more_horiz</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex items-center justify-between py-6">
+<p class="text-xs text-muted">Viewing <span class="text-main">1-24</span> of <span class="text-main">1,284</span> objects</p>
+<div class="flex items-center gap-4">
+<button class="px-4 py-2 text-xs border border-border rounded-md hover:bg-white/5 transition-colors disabled:opacity-50" disabled="">Previous</button>
+<button class="px-4 py-2 text-xs border border-border rounded-md hover:bg-white/5 transition-colors">Next Page</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<aside class="w-80 border-l border-border bg-background flex flex-col hidden 2xl:flex">
+<div class="p-8 border-b border-border">
+<h3 class="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted flex items-center justify-between">
+            Activity Stream
+            <span class="flex h-2 w-2 rounded-full bg-white"></span>
+</h3>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-10">
+<div class="relative pl-6">
+<div class="absolute left-0 top-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+<div class="space-y-1">
+<p class="text-xs font-medium">Reconnection Success</p>
+<p class="text-[11px] text-muted leading-relaxed">MB-S314-01 handshake completed. Latency: 12ms.</p>
+<p class="text-[10px] text-muted/50 font-mono">2m ago</p>
+</div>
+</div>
+<div class="relative pl-6">
+<div class="absolute left-0 top-1.5 w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+<div class="space-y-1">
+<p class="text-xs font-medium">Threshold Breach</p>
+<p class="text-[11px] text-muted leading-relaxed">SB-H102 reported battery level 12%.</p>
+<p class="text-[10px] text-muted/50 font-mono">18m ago</p>
+</div>
+</div>
+<div class="relative pl-6">
+<div class="absolute left-0 top-1.5 w-1.5 h-1.5 rounded-full bg-white/20 border border-white/40"></div>
+<div class="space-y-1">
+<p class="text-xs font-medium">Kernel Update</p>
+<p class="text-[11px] text-muted leading-relaxed">Art-Studio iPad group updated to v14.2.1.</p>
+<p class="text-[10px] text-muted/50 font-mono">1h ago</p>
+</div>
+</div>
+<div class="relative pl-6">
+<div class="absolute left-0 top-1.5 w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+<div class="space-y-1">
+<p class="text-xs font-medium">Link Loss</p>
+<p class="text-[11px] text-muted leading-relaxed">CAM-HALL-W connection timed out after 5 retries.</p>
+<p class="text-[10px] text-muted/50 font-mono">5h ago</p>
+</div>
+</div>
+</div>
+<div class="p-8 border-t border-border bg-white/5">
+<button class="w-full py-2.5 text-xs font-medium text-main border border-white/20 rounded-md hover:bg-white/10 transition-all">
+            Full Audit Logs
+        </button>
+</div>
+</aside>
+
+</body></html>

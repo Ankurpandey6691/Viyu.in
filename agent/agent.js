@@ -14,7 +14,7 @@ console.log(`Target Server: ${SERVER_URL}`);
 const sendHeartbeat = async () => {
     try {
         const payload = {
-            deviceId: DEVICE_ID,
+            deviceId: DEVICE_ID, 
             roomNo: 'LAB-1', // Start with hardcoded, can be config later
             type: 'PC'
         };

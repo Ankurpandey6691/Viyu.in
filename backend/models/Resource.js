@@ -11,6 +11,21 @@ const ResourceSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    block: {
+        type: String,
+        default: 'Main Block',
+        index: true
+    },
+    department: {
+        type: String,
+        default: 'General',
+        index: true
+    },
+    lab: {
+        type: String,
+        default: 'General Lab',
+        index: true
+    },
     type: {
         type: String,
         enum: ['PC', 'Projector'],

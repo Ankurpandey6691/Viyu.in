@@ -99,6 +99,18 @@ io.on('connection', (socket) => {
     });
 });
 
+// Resources Endpoint
+app.get('/api/resources', async (req, res) => {
+    try {
+        const Resource = require('./models/Resource');
+        const resources = await Resource.find({});
+        res.json(resources);
+    } catch (err) {
+        console.error('Error fetching resources:', err);
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
+
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
