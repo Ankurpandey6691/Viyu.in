@@ -1,0 +1,10 @@
+{
+    "name": "viyu-agent",
+    "version": "1.0.0",
+    "description": "Heartbeat Agent for Viyu.in",
+    "main": "agent.js",
+    "dependencies": {
+        "axios": "^1.6.2",
+        "dotenv": "^16.3.1"
+    }
+}

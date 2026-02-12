@@ -102,6 +102,28 @@ The system follows a **Decoupled 3-Tier Architecture**:
     - Deploy the heartbeat script to client machines.
     - Configure with unique `DeviceID` and Server URL.
 
+## 🧪 Testing & Verification
+
+### 1. Start the Backend
+```bash
+cd backend
+npm run dev
+```
+
+### 2. Run the Agent Simulator
+To calculate load and verify real-time updates:
+```bash
+cd agent
+npm install
+node simulate_lab.js
+```
+This will spawn 5 virtual agents pinging the server every 5 seconds.
+
+### 3. Verify in Redis
+```bash
+redis-cli keys "device:*:status"
+```
+
 ## 🤝 Contribution
 Contributions are welcome! Please follow the standard fork-and-pull request workflow.
 
