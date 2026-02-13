@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Optimizer | Smart Classroom Infrastructure</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6366F1",
+                        "background": "#0B0B0C",
+                        "surface": "#161618",
+                        "border": "#27272A",
+                        "text-main": "#FAFAFA",
+                        "text-secondary": "#A1A1AA",
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-background text-text-main antialiased selection:bg-primary/30;
+            }
+        }
+        .grid-texture {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, #27272A 1px, transparent 1px),
+                linear-gradient(to bottom, #27272A 1px, transparent 1px);
+            mask-image: radial-gradient(ellipse at center, black, transparent 80%);
+        }
+        .hero-height {
+            height: 90vh;
+            min-height: 800px;
+        }
+        .glass-nav {
+            background: rgba(11, 11, 12, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #27272A;
+        }
+        .dashboard-mask {
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+        .callout-line {
+            height: 1px;
+            background: #27272A;
+            position: absolute;
+            width: 120px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+        }
+        .section-padding {
+            @apply py-48 md:py-64;
+        }
+    </style>
+</head>
+<body class="font-sans">
+<nav class="fixed top-0 w-full z-[100] glass-nav">
+<div class="max-w-[1400px] mx-auto px-8 h-16 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2.5">
+<div class="w-6 h-6 bg-white rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-background text-base font-bold">dataset</span>
+</div>
+<span class="font-semibold text-sm tracking-tight text-white uppercase">Optimizer</span>
+</div>
+<div class="hidden md:flex items-center gap-6 text-[13px] font-medium text-text-secondary">
+<a class="hover:text-white transition-colors" href="#">Features</a>
+<a class="hover:text-white transition-colors" href="#">Infrastructure</a>
+<a class="hover:text-white transition-colors" href="#">Integrations</a>
+<a class="hover:text-white transition-colors" href="#">Docs</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[13px] font-medium text-text-secondary hover:text-white transition-colors">Log In</button>
+<button class="bg-white text-background px-4 py-1.5 rounded text-[13px] font-semibold hover:bg-gray-200 transition-all">
+                Sign Up
+            </button>
+</div>
+</div>
+</nav>
+<main>
+<section class="hero-height relative flex flex-col items-center justify-center overflow-hidden border-b border-border">
+<div class="absolute inset-0 grid-texture opacity-30"></div>
+<div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.05),transparent_50%)]"></div>
+<div class="max-w-[1400px] mx-auto px-8 w-full z-10 text-center flex flex-col items-center">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-border text-[12px] font-medium text-text-secondary mb-10">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                v4.0 Engine is now live
+            </div>
+<h1 class="text-7xl md:text-[120px] font-bold tracking-tighter leading-[0.9] mb-12 text-white">
+                Programmable <br/>Classrooms.
+            </h1>
+<p class="text-lg md:text-xl text-text-secondary mb-12 leading-relaxed max-w-2xl mx-auto">
+                The world's most advanced resource optimization layer. Automate HVAC, lighting, and occupancy across your entire campus with a single API.
+            </p>
+<div class="flex flex-col sm:flex-row items-center gap-4">
+<button class="px-8 py-3 bg-white text-background rounded font-semibold text-sm hover:bg-gray-200 transition-all">
+                    Deploy Infrastructure
+                </button>
+<button class="px-8 py-3 border border-border bg-surface text-white rounded font-semibold text-sm hover:bg-border transition-all">
+                    Book Technical Demo
+                </button>
+</div>
+</div>
+<div class="absolute bottom-0 w-full max-w-6xl px-8 translate-y-1/2">
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-b from-border to-transparent rounded-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+<div class="relative bg-background border border-border rounded-xl overflow-hidden dashboard-mask shadow-2xl">
+<img alt="Dashboard UI" class="w-full h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaiO51hIKwDkKGw7odMvvZU4AN8QTiaXtx24NUGI1_BoteuqC19N2stkMSGziYwih3dj5jwCQTLYJ92-uGS4Cjw0W4uFpy_7Ubs5fHputefOrkyj1zOQNvq1oNgbLWtmCi_eqe29hMzgn6L9eOvMfDUXmkZOBitKGIfiliEAOagvA5IJda6j7EkXebGrcJeVawv3ijKrfLp-RjfzZPbVca4y_ESZSgj97OCllx2LnyG956omzHRbEVpUzVu_LMbRJYOb3vCRnP3Zo"/>
+<div class="absolute top-[20%] right-[10%] hidden lg:block">
+<div class="relative">
+<div class="callout-line -left-32 top-1/2"></div>
+<div class="bg-surface border border-border p-3 rounded shadow-xl">
+<p class="text-[11px] font-bold text-primary uppercase tracking-widest mb-1">Telemetry</p>
+<p class="text-xs text-white">Live device status</p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-[40%] left-[8%] hidden lg:block">
+<div class="relative">
+<div class="callout-line -right-32 top-1/2"></div>
+<div class="bg-surface border border-border p-3 rounded shadow-xl">
+<p class="text-[11px] font-bold text-primary uppercase tracking-widest mb-1">Analytics</p>
+<p class="text-xs text-white">Attendance sessions</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="section-padding bg-background">
+<div class="max-w-[1400px] mx-auto px-8">
+<div class="grid lg:grid-cols-2 gap-32 items-center">
+<div class="space-y-10">
+<h2 class="text-5xl md:text-7xl font-bold text-white tracking-tighter leading-tight">
+                        Eliminate the <br/>efficiency gap.
+                    </h2>
+<p class="text-xl text-text-secondary leading-relaxed max-w-xl">
+                        Traditional facility management relies on rigid schedules. Optimizer introduces reactive orchestration, reducing idle energy consumption by up to 42%.
+                    </p>
+<div class="pt-6">
+<a class="text-sm font-semibold text-primary flex items-center gap-2 group" href="#">
+                            Explore the architecture 
+                            <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="relative">
+<div class="bg-surface border border-border rounded-2xl p-2">
+<img alt="Smart Sensor" class="rounded-xl w-full h-[600px] object-cover grayscale hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_q4duWMyusR2VMOlGmd7i7nx9vU1LlmUodempjwfMt3jGbI51d4qM4HLkycYJf6J3RqdNMy71pYlI0vZFzdNQSn0VN-OnrtRhXWdCnzs8dHZXwpsorUTvmSPCUsMRxDg8BrWjZJaNWfIfgpQtwAg65laj3cWlU4OqYzzvqHqml0R28vzXuoAibX-UP8DUu0lCfCu6oiNmeQ1iqBBQ6n_y8V7Fh1nE9FiflgCd5nLcAmTR8heb93MxQBpxCPBV9XQXiJEisDzPtKE"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="section-padding bg-surface/30 border-y border-border">
+<div class="max-w-[1400px] mx-auto px-8">
+<div class="grid lg:grid-cols-2 gap-32 items-center">
+<div class="order-2 lg:order-1 relative">
+<div class="bg-surface border border-border rounded-2xl p-2">
+<img alt="Occupancy Tracking" class="rounded-xl w-full h-[600px] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB696t7IoCLWHDpgZvlWp8dW4UsCaLZrUcZgAfyg43lIZ-knRmvldemVFQcmdpJbk2V5dzv9zhkXE2iffY9mWxRPP7EU0mSeiEIi6EVlxxJqIewV3xNpFtV4CPUtGOtAk6ekcWiMp1he5eWSLe_-wY7hsC5USiaeA763GDVGEn336fGVKmEd_8viFtiicydyF2B0GQGMbY4SRZ9ZsJX6FfcqtGh7Mmb4FXI0Pvnyx7yRLsgw_r0juD1lzMqVrKcYVLRcxxsjYmRGRw"/>
+</div>
+</div>
+<div class="order-1 lg:order-2 space-y-10">
+<span class="text-primary font-mono text-sm tracking-[0.2em] uppercase">02 — Sensing Layer</span>
+<h2 class="text-5xl md:text-7xl font-bold text-white tracking-tighter leading-tight">
+                        Precision <br/>Occupancy.
+                    </h2>
+<p class="text-xl text-text-secondary leading-relaxed max-w-xl">
+                        Deploy thermal imaging and LIDAR-based sensing that provides 0.5m spatial accuracy while maintaining total student anonymity at the edge.
+                    </p>
+<div class="space-y-6 pt-4">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary">security</span>
+<div>
+<h4 class="text-white font-semibold">Privacy by Design</h4>
+<p class="text-sm text-text-secondary">All compute happens locally. No image data ever hits the cloud.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="section-padding">
+<div class="max-w-[1400px] mx-auto px-8">
+<div class="mb-32">
+<h2 class="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-8">Infrastructure <br/>at scale.</h2>
+<p class="text-xl text-text-secondary max-w-2xl">A robust, low-latency stack built for global institutions requiring enterprise-grade reliability and security.</p>
+</div>
+<div class="grid md:grid-cols-3 gap-12 border-t border-border pt-16">
+<div class="space-y-6">
+<div class="text-white font-bold text-lg flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                        Edge Inference
+                    </div>
+<p class="text-text-secondary text-sm leading-relaxed">Local gateways process sensor data in &lt;10ms, allowing for instant lighting and climate adjustments without cloud round-trips.</p>
+</div>
+<div class="space-y-6">
+<div class="text-white font-bold text-lg flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                        Unified Control
+                    </div>
+<p class="text-text-secondary text-sm leading-relaxed">Manage thousands of nodes across multiple campuses through a single, performant dashboard with granular RBAC controls.</p>
+</div>
+<div class="space-y-6">
+<div class="text-white font-bold text-lg flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                        Hardened Security
+                    </div>
+<p class="text-text-secondary text-sm leading-relaxed">End-to-end mTLS encryption and hardware-level root of trust ensure your campus infrastructure remains tamper-proof.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="section-padding border-t border-border bg-[radial-gradient(circle_at_50%_100%,rgba(99,102,241,0.08),transparent_70%)]">
+<div class="max-w-[1400px] mx-auto px-8 text-center">
+<h2 class="text-6xl md:text-9xl font-bold text-white tracking-tighter mb-16">Ready to scale?</h2>
+<div class="flex flex-col sm:flex-row justify-center gap-6 items-center">
+<button class="px-12 py-5 bg-white text-background rounded font-bold text-lg hover:bg-gray-200 transition-all">
+                    Start Integration
+                </button>
+<button class="px-12 py-5 border border-border bg-surface text-white rounded font-bold text-lg hover:bg-border transition-all">
+                    Talk to Engineering
+                </button>
+</div>
+</div>
+</section>
+</main>
+<footer class="py-24 border-t border-border bg-background">
+<div class="max-w-[1400px] mx-auto px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-24">
+<div class="col-span-2 space-y-6">
+<div class="flex items-center gap-2.5">
+<div class="w-6 h-6 bg-white rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-background text-base font-bold">dataset</span>
+</div>
+<span class="font-semibold text-sm tracking-tight text-white uppercase">Optimizer</span>
+</div>
+<p class="text-text-secondary text-sm max-w-xs">Building the intelligent backbone for the next generation of educational environments.</p>
+</div>
+<div class="space-y-4">
+<h5 class="text-white font-semibold text-[13px]">Platform</h5>
+<ul class="text-text-secondary text-[13px] space-y-2">
+<li><a class="hover:text-white transition-colors" href="#">Infrastructure</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Sensing</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Security</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h5 class="text-white font-semibold text-[13px]">Resources</h5>
+<ul class="text-text-secondary text-[13px] space-y-2">
+<li><a class="hover:text-white transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-white transition-colors" href="#">API Reference</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Guides</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h5 class="text-white font-semibold text-[13px]">Company</h5>
+<ul class="text-text-secondary text-[13px] space-y-2">
+<li><a class="hover:text-white transition-colors" href="#">Changelog</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Pricing</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Terms</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h5 class="text-white font-semibold text-[13px]">Support</h5>
+<ul class="text-text-secondary text-[13px] space-y-2">
+<li><a class="hover:text-white transition-colors" href="#">Status</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Contact</a></li>
+<li><a class="hover:text-white transition-colors" href="#">X / Twitter</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-border flex justify-between items-center">
+<span class="text-[12px] text-text-secondary font-medium">© 2024 Optimizer Infrastructure Inc.</span>
+<div class="flex gap-4">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-[12px] text-text-secondary">All systems operational</span>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>

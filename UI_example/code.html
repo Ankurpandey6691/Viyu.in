@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Neutral Resource Monitoring</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #0B0B0C;
+                color: #A1A1AA;
+            }
+        }
+        :root {
+            --bg-main: #0B0B0C;
+            --card-bg: #121214;
+            --border-color: #1F1F22;
+            --primary: #6366F1;
+            --text-main: #E2E8F0;
+            --text-muted: #71717A;
+        }
+        .grid-bg {
+            background-image: 
+                linear-gradient(to right, #1F1F22 1px, transparent 1px),
+                linear-gradient(to bottom, #1F1F22 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #27272A;
+            border-radius: 10px;
+        }
+        .slab-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        .slab-card:hover {
+            border-color: #3F3F46;
+            transform: translateY(-2px);
+        }
+        .tree-line::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: #27272A;
+        }
+    </style>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bgMain: '#0B0B0C',
+                        cardBg: '#121214',
+                        borderColor: '#1F1F22',
+                        primary: '#6366F1',
+                        textMain: '#E2E8F0',
+                        textMuted: '#71717A'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-screen overflow-hidden flex flex-col">
+<header class="h-16 border-b border-borderColor bg-bgMain/80 backdrop-blur-md flex items-center justify-between px-10 z-30 relative">
+<div class="flex items-center gap-4">
+<div class="bg-primary/10 border border-primary/20 flex items-center justify-center w-9 h-9 rounded-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">architecture</span>
+</div>
+<h1 class="text-sm font-bold tracking-[0.2em] text-textMain uppercase">System.Monitor <span class="text-textMuted font-light ml-2">v4.0</span></h1>
+</div>
+<div class="flex items-center gap-8">
+<div class="flex gap-6 text-[11px] font-semibold tracking-widest text-textMuted">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
+<span>142 NOMINAL</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+<span>3 ATTENTION</span>
+</div>
+</div>
+<div class="h-6 w-px bg-borderColor"></div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-sm bg-zinc-800 border border-borderColor flex items-center justify-center text-textMain text-[10px] font-bold">JD</div>
+</div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden grid-bg">
+<aside class="w-80 border-r border-borderColor bg-bgMain/90 backdrop-blur-sm flex flex-col p-8 mr-6">
+<div class="mb-10">
+<h2 class="text-[11px] font-black text-textMain uppercase tracking-[0.3em] mb-8">Infrastructure</h2>
+<div class="space-y-4">
+<div class="relative">
+<div class="flex items-center gap-3 py-2 cursor-pointer group">
+<span class="material-symbols-outlined text-[18px] text-zinc-600 group-hover:text-primary">expand_more</span>
+<span class="text-xs font-bold text-textMain tracking-wide uppercase">North Campus</span>
+</div>
+<div class="ml-7 space-y-2 mt-2 relative tree-line">
+<div class="flex items-center gap-3 py-2 px-3 bg-primary/5 border border-primary/20 rounded-sm text-primary cursor-pointer">
+<span class="material-symbols-outlined text-[16px]">domain</span>
+<span class="text-[11px] font-bold uppercase tracking-wider">Engineering Hall</span>
+</div>
+<div class="ml-6 space-y-1">
+<div class="flex items-center justify-between p-2 hover:bg-zinc-800/50 rounded-sm cursor-pointer text-[11px] text-textMuted group">
+<span class="flex items-center gap-2">Room 201</span>
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+</div>
+<div class="flex items-center justify-between p-2 bg-zinc-800/80 border border-borderColor rounded-sm cursor-pointer text-[11px] font-bold text-textMain">
+<span class="flex items-center gap-2">Room 305</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/80"></span>
+</div>
+<div class="flex items-center justify-between p-2 hover:bg-zinc-800/50 rounded-sm cursor-pointer text-[11px] text-textMuted group">
+<span class="flex items-center gap-2">Auditorium A</span>
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+</div>
+</div>
+</div>
+</div>
+<div class="relative mt-6">
+<div class="flex items-center gap-3 py-2 cursor-pointer group opacity-50 hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px] text-zinc-600">chevron_right</span>
+<span class="text-xs font-bold text-textMuted tracking-wide uppercase">South Campus</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<section class="flex-1 overflow-y-auto custom-scrollbar p-12">
+<div class="flex items-end justify-between mb-16">
+<div>
+<nav class="flex items-center gap-3 text-[10px] text-textMuted uppercase tracking-[0.2em] mb-3">
+<span>Hierarchy</span>
+<span class="w-1 h-1 rounded-full bg-borderColor"></span>
+<span>North Campus</span>
+<span class="w-1 h-1 rounded-full bg-borderColor"></span>
+<span class="text-zinc-500">Engineering Hall</span>
+</nav>
+<h2 class="text-4xl font-black text-textMain tracking-tighter uppercase">Room 305 <span class="text-zinc-700 font-light ml-3">/ Lab.Resources</span></h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex bg-zinc-900 border border-borderColor p-1 rounded-sm">
+<button class="px-5 py-2 bg-zinc-800 text-textMain text-[10px] font-black tracking-widest uppercase">Grid</button>
+<button class="px-5 py-2 text-textMuted hover:text-textMain text-[10px] font-black tracking-widest uppercase transition-colors">List</button>
+</div>
+<button class="flex items-center gap-2 px-6 py-3 border border-borderColor hover:bg-zinc-800 text-textMain text-[10px] font-black uppercase tracking-widest transition-all">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                    Settings
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-10">
+<div class="slab-card p-10 ring-1 ring-primary/30 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-10">
+<span class="text-[10px] font-black tracking-[0.2em] text-primary bg-primary/5 px-3 py-1 border border-primary/20">ACTIVE</span>
+</div>
+<div class="mb-12">
+<div class="w-14 h-14 bg-zinc-800/50 flex items-center justify-center mb-8 border border-borderColor group-hover:border-primary/40 transition-colors">
+<span class="material-symbols-outlined text-zinc-400 group-hover:text-primary text-[32px]">desktop_windows</span>
+</div>
+<h3 class="text-2xl font-black text-textMain tracking-tight mb-2">WS-LAB-042</h3>
+<p class="text-[10px] text-textMuted font-mono uppercase tracking-widest">192.168.1.142 · Node_Alpha</p>
+</div>
+<div class="grid grid-cols-2 gap-10 pt-10 border-t border-borderColor/50">
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">CPU LOAD</p>
+<p class="text-lg font-medium text-textMain">94.2% <span class="text-[10px] text-zinc-600 ml-1">Limit</span></p>
+</div>
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">MEMORY</p>
+<p class="text-lg font-medium text-textMain">12.4 GB</p>
+</div>
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">TEMP</p>
+<p class="text-lg font-medium text-textMain">78°C</p>
+</div>
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">UPTIME</p>
+<p class="text-lg font-medium text-textMain">4d 12h</p>
+</div>
+</div>
+</div>
+<div class="slab-card p-10 group">
+<div class="absolute top-0 right-0 p-10">
+<span class="text-[10px] font-black tracking-[0.2em] text-textMuted border border-borderColor px-3 py-1">NOMINAL</span>
+</div>
+<div class="mb-12">
+<div class="w-14 h-14 bg-zinc-800/50 flex items-center justify-center mb-8 border border-borderColor">
+<span class="material-symbols-outlined text-zinc-500 text-[32px]">desktop_windows</span>
+</div>
+<h3 class="text-2xl font-black text-textMain tracking-tight mb-2">WS-LAB-043</h3>
+<p class="text-[10px] text-textMuted font-mono uppercase tracking-widest">192.168.1.143 · Node_Beta</p>
+</div>
+<div class="grid grid-cols-2 gap-10 pt-10 border-t border-borderColor/50">
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">CPU LOAD</p>
+<p class="text-lg font-medium text-textMain">12.5%</p>
+</div>
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">MEMORY</p>
+<p class="text-lg font-medium text-textMain">2.8 GB</p>
+</div>
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">TEMP</p>
+<p class="text-lg font-medium text-textMain">42°C</p>
+</div>
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">UPTIME</p>
+<p class="text-lg font-medium text-textMain">12d 04h</p>
+</div>
+</div>
+</div>
+<div class="slab-card p-10 group">
+<div class="absolute top-0 right-0 p-10">
+<span class="text-[10px] font-black tracking-[0.2em] text-textMuted border border-borderColor px-3 py-1">NOMINAL</span>
+</div>
+<div class="mb-12">
+<div class="w-14 h-14 bg-zinc-800/50 flex items-center justify-center mb-8 border border-borderColor">
+<span class="material-symbols-outlined text-zinc-500 text-[32px]">videocam</span>
+</div>
+<h3 class="text-2xl font-black text-textMain tracking-tight mb-2">CAM-NORTH-01</h3>
+<p class="text-[10px] text-textMuted font-mono uppercase tracking-widest">192.168.1.201 · Stream_A</p>
+</div>
+<div class="grid grid-cols-2 gap-10 pt-10 border-t border-borderColor/50">
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">BANDWIDTH</p>
+<p class="text-lg font-medium text-textMain">5.2 Mbps</p>
+</div>
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">STATUS</p>
+<p class="text-lg font-medium text-textMain">Locked</p>
+</div>
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">BITRATE</p>
+<p class="text-lg font-medium text-textMain">4000 CBR</p>
+</div>
+<div>
+<p class="text-[9px] text-textMuted uppercase font-black tracking-[0.2em] mb-2">UPTIME</p>
+<p class="text-lg font-medium text-textMain">142d 11h</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<aside class="w-[450px] border-l border-borderColor bg-bgMain/90 backdrop-blur-sm flex flex-col ml-6">
+<div class="p-10 border-b border-borderColor">
+<div class="flex justify-between items-center mb-10">
+<span class="text-[10px] font-black text-textMain uppercase tracking-[0.4em]">Analytics.Log</span>
+<button class="text-textMuted hover:text-textMain transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex items-center gap-6 mb-12">
+<div class="w-20 h-20 bg-primary/5 border border-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[40px]">desktop_windows</span>
+</div>
+<div>
+<h2 class="text-3xl font-black text-textMain tracking-tight">WS-LAB-042</h2>
+<p class="text-[10px] text-primary font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        High Thermal Activity detected
+                    </p>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 bg-primary text-white text-[10px] font-black py-4 uppercase tracking-[0.2em] hover:brightness-110 transition-all">
+                    Initialize Control
+                </button>
+<button class="w-16 bg-zinc-900 border border-borderColor text-textMuted hover:text-textMain flex items-center justify-center transition-all">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-12">
+<div>
+<div class="flex justify-between items-end mb-4">
+<p class="text-[10px] font-black text-textMuted uppercase tracking-widest">CPU Utilization</p>
+<span class="text-[10px] text-zinc-600 font-mono uppercase">Peak: 98%</span>
+</div>
+<h4 class="text-4xl font-black text-textMain mb-6">94%</h4>
+<div class="w-full h-1 bg-zinc-900 overflow-hidden">
+<div class="h-full bg-primary w-[94%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-4">
+<p class="text-[10px] font-black text-textMuted uppercase tracking-widest">Memory Distribution</p>
+</div>
+<h4 class="text-4xl font-black text-textMain mb-6">26%</h4>
+<div class="w-full h-1 bg-zinc-900 overflow-hidden">
+<div class="h-full bg-zinc-600 w-[26%]"></div>
+</div>
+</div>
+<div class="pt-4">
+<h5 class="text-[11px] font-black text-textMain uppercase tracking-[0.3em] mb-8">Event Timeline</h5>
+<div class="space-y-8 relative">
+<div class="absolute left-0 top-0 bottom-0 w-px bg-borderColor ml-[3px]"></div>
+<div class="flex gap-6 relative">
+<div class="w-2 h-2 rounded-full bg-primary mt-2 ring-4 ring-primary/10"></div>
+<div>
+<p class="text-[11px] font-bold text-textMain tracking-tight">Thermal threshold alert (Core 2)</p>
+<span class="text-[9px] text-zinc-600 uppercase tracking-widest mt-1 block">14:02:11 · Watchdog_Svc</span>
+</div>
+</div>
+<div class="flex gap-6 relative">
+<div class="w-2 h-2 rounded-full bg-zinc-700 mt-2"></div>
+<div>
+<p class="text-[11px] font-bold text-textMain tracking-tight">Automated recovery initiated</p>
+<span class="text-[9px] text-zinc-600 uppercase tracking-widest mt-1 block">13:58:04 · Agent_Core</span>
+</div>
+</div>
+<div class="flex gap-6 relative opacity-60">
+<div class="w-2 h-2 rounded-full bg-zinc-800 mt-2"></div>
+<div>
+<p class="text-[11px] font-bold text-textMuted tracking-tight">System session: lab_admin_04</p>
+<span class="text-[9px] text-zinc-700 uppercase tracking-widest mt-1 block">12:44:22 · Login_Auth</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</main>
+
+</body></html>
