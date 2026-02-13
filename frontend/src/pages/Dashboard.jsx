@@ -92,7 +92,7 @@ const Dashboard = () => {
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col h-full relative min-w-0">
-                <Header lastSync={lastSync} isConnected={isConnected} onlineCount={onlineCount} />
+                <Header isConnected={isConnected} onlineCount={onlineCount} />
 
                 <main className="flex-1 overflow-y-auto p-10 grid-bg custom-scrollbar relative">
                     <div className="max-w-[1600px] mx-auto">
