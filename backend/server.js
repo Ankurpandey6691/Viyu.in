@@ -47,12 +47,6 @@ redisClient.on('error', (err) => console.log('Redis Client Error', err));
             if (message.includes(':status')) {
                 const parts = message.split(':');
                 if (parts.length >= 2) {
-                    const deviceId = parts[1]; // Adjust based on key format
-                    // Determine deviceId from the key
-                    // Key format: device:<deviceId>:status
-                    // message is the key name.
-                    // e.g., device:LAB1-PC01:status
-
                     const DeviceIdFromKey = message.split(':')[1];
 
                     console.log(`Device ${DeviceIdFromKey} went offline (Redis Key Expired)`);
@@ -121,21 +115,29 @@ server.listen(PORT, () => {
     const syncZombiePCs = async () => {
         try {
             console.log('Running Zombie PC Cleanup...');
+            // Wait for Redis to be ready if needed, but client buffers commands
+            if (!redisClient.isOpen) {
+                console.log('Waiting for Redis to open...');
+                // Simple wait or check
+            }
+
             const resources = await Resource.find({});
 
             for (const resource of resources) {
                 const redisKey = `device:${resource.deviceId}:status`;
-                const status = await redisClient.get(redisKey);
-
-                if (!status && resource.status === 'Online') {
-                    console.log(`Marking Zombie PC detected: ${resource.deviceId} as Offline`);
-
-                    // Update DB
-                    resource.status = 'Offline';
-                    await resource.save();
-
-                    // Broadcast update
-                    io.emit('status_update', { deviceId: resource.deviceId, status: 'Offline' });
+                // If redis is not ready, this might throw or wait. 
+                // Since we start server.listen immediately, we might race.
+                // However, the redis client queues commands.
+                try {
+                    const status = await redisClient.get(redisKey);
+                    if (!status && resource.status === 'Online') {
+                        console.log(`Marking Zombie PC detected: ${resource.deviceId} as Offline`);
+                        resource.status = 'Offline';
+                        await resource.save();
+                        io.emit('status_update', { deviceId: resource.deviceId, status: 'Offline' });
+                    }
+                } catch (e) {
+                    console.error(`Error checking zombie status for ${resource.deviceId}:`, e.message);
                 }
             }
             console.log('Zombie PC Cleanup Complete');

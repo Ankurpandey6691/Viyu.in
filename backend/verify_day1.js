@@ -19,6 +19,13 @@ async function runVerification() {
     // 2. Setup Socket.io Client
     const socket = io(SERVER_URL);
 
+    await new Promise((resolve) => {
+        socket.on('connect', () => {
+            console.log('✅ Socket.io: Connected');
+            resolve();
+        });
+    });
+
     let socketReceived = false;
     socket.on('status_update', (data) => {
         if (data.deviceId === DEVICE_ID && data.status === 'Online') {
