@@ -1,5 +1,7 @@
-import { ChevronRight, ChevronDown, MapPin, Monitor, Layers, School, Building2, Cpu, Wrench, BookOpen } from 'lucide-react'
+import { ChevronRight, ChevronDown, MapPin, Monitor, Layers, School, Building2, Cpu, Wrench, BookOpen, Settings, LayoutDashboard, Users } from 'lucide-react'
 import { useState, useMemo } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { Link } from 'react-router-dom'
 
 const Sidebar = ({ resources = [], onSelect, selectedFilter }) => {
     const [expandedNodes, setExpandedNodes] = useState(new Set(['Main Academic Block', 'CSE', 'Data Structures Lab']));
@@ -47,9 +49,44 @@ const Sidebar = ({ resources = [], onSelect, selectedFilter }) => {
         return <Layers className="w-3 h-3" />;
     }
 
+    const { currentUser } = useAuth();
+
     return (
         <aside className="w-72 border-r border-borderColor bg-bgMain/90 backdrop-blur-sm flex flex-col p-6 hidden md:flex h-full overflow-y-auto custom-scrollbar">
             <div className="mb-8">
+                {currentUser?.role === 'superadmin' && (
+                    <div className="mb-6 pb-6 border-b border-borderColor">
+                        <h2 className="text-[10px] font-black text-textMain uppercase tracking-[0.3em] mb-4 text-opacity-50">Admin Controls</h2>
+                        <Link to="/dashboard/infrastructure" className="flex items-center gap-2 py-2 px-2 rounded hover:bg-white/5 text-textMuted hover:text-white transition-colors">
+                            <Settings className="w-4 h-4" />
+                            <span className="text-sm font-medium">Infrastructure</span>
+                        </Link>
+                        <Link to="/dashboard/users" className="flex items-center gap-2 py-2 px-2 rounded hover:bg-white/5 text-textMuted hover:text-white transition-colors">
+                            <School className="w-4 h-4" />
+                            <span className="text-sm font-medium">User Management</span>
+                        </Link>
+                    </div>
+                )}
+
+                {currentUser?.role === 'admin' && (
+                    <div className="mb-6 pb-6 border-b border-borderColor">
+                        <h2 className="text-[10px] font-black text-textMain uppercase tracking-[0.3em] mb-4 text-opacity-50">Block Management</h2>
+                        <Link to="/dashboard/admin" className="flex items-center gap-2 py-2 px-2 rounded hover:bg-white/5 text-textMuted hover:text-white transition-colors">
+                            <LayoutDashboard className="w-4 h-4" />
+                            <span className="text-sm font-medium">Overview</span>
+                        </Link>
+                        <Link to="/dashboard/faculty" className="flex items-center gap-2 py-2 px-2 rounded hover:bg-white/5 text-textMuted hover:text-white transition-colors">
+                            <Users className="w-4 h-4" />
+                            <span className="text-sm font-medium">Faculty</span>
+                        </Link>
+                        {/* Link to view Labs is implicit in the tree below, typically */}
+                    </div>
+                )}
+
+                {/* Show Hierarchy for everyone, but maybe filtered for Admin? 
+                    For now, keep full hierarchy as "Infrastructure" implies physical layout.
+                    Admin can click on their block in the tree.
+                */}
                 <h2 className="text-[10px] font-black text-textMain uppercase tracking-[0.3em] mb-6 text-opacity-50">Infrastructure</h2>
 
                 {/* Root Node: SVVV */}

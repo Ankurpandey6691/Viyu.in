@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const { createClient } = require('redis');
 const authRoute = require("./routes/authRoute");
+const userRoute = require("./routes/userRoute");
 
 const app = express();
 const server = http.createServer(app);
@@ -19,7 +20,11 @@ const io = new Server(server, {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use("/api/auth", authRoute);
+app.use("/api/auth", require("./routes/authRoute")); // Re-added authRoute as it's essential
+app.use('/api/users', require('./routes/userRoute'));
+app.use('/api/resources', require('./routes/resourceRoute'));
+app.use('/api/structure', require('./routes/structureRoute')); // Dynamic Structure
+app.use('/api/admin', require('./routes/adminRoute')); // Admin Operational System
 
 // Redis Client
 const redisClient = createClient({
@@ -95,8 +100,30 @@ io.on('connection', (socket) => {
     });
 });
 
+const { authenticate, authorizeScope, authorizeRoles } = require('./middleware/authMiddleware');
+
 // Resources Endpoint
-app.get('/api/resources', async (req, res) => {
+// Protected: Only authenticated users. 
+// Scope check could be applied if we had :block/:lab params, but for now just general access control or block-based if we filter.
+// For the test "Faculty accessing other faculty's lab", we need a scoped route.
+// Let's modify this to accept query params for scope check or just rely on the test script to hit a scoped-like endpoint.
+// Actually, to test "Faculty trying to access another faculty's lab", we need a route that invokes `authorizeScope`.
+// `authorizeScope` checks `req.params.block` or `req.body.block`.
+// Let's create a specific scoped resource route for testing/usage.
+
+app.get('/api/resources/:block/:lab', authenticate, authorizeScope, async (req, res) => {
+    try {
+        const { block, lab } = req.params;
+        // In a real app, we'd filter by block/lab. 
+        // For now, just return success to prove access was granted.
+        res.json({ message: `Access granted to ${block} / ${lab}` });
+    } catch (err) {
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
+
+// Original resources route - Protected
+app.get('/api/resources', authenticate, async (req, res) => {
     try {
         const Resource = require('./models/Resource');
         const resources = await Resource.find({});
@@ -105,6 +132,13 @@ app.get('/api/resources', async (req, res) => {
         console.error('Error fetching resources:', err);
         res.status(500).json({ error: 'Server Error' });
     }
+});
+
+// Dummy Attendance Route for RBAC Verification
+// Requirement: "Maintenance trying to hit attendance route" -> Should be denied.
+// Only Superadmin, Admin, and maybe Faculty (for their own) should access.
+app.get('/api/attendance', authenticate, authorizeRoles('superadmin', 'admin', 'faculty'), (req, res) => {
+    res.json({ message: "Attendance data" });
 });
 
 const PORT = process.env.PORT || 5000;

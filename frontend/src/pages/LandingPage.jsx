@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Activity, Shield, Zap, ArrowRight, Monitor } from 'lucide-react'   
+import { Activity, Shield, Zap, ArrowRight, Monitor } from 'lucide-react'
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -25,15 +25,9 @@ const LandingPage = () => {
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => navigate('/dashboard')}
-                            className="text-[13px] font-medium text-textMuted hover:text-white transition-colors"
-                        >
-                            Log In
-                        </button>
-                        <button
-                            onClick={() => navigate('/dashboard')}
                             className="bg-white text-bgMain px-4 py-1.5 rounded text-[13px] font-semibold hover:bg-zinc-200 transition-all"
                         >
-                            Sign Up
+                            Enter Dashboard
                         </button>
                     </div>
                 </div>
