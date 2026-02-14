@@ -52,4 +52,4 @@ setInterval(() => {
     });
 
     process.stdout.write(`${totalPings} devices polled.`);
-}, 5000); // 5 Seconds Interval for Live Effect
+}, 20000); 

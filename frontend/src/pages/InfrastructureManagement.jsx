@@ -14,15 +14,15 @@ const InfrastructureManagement = () => {
 
     // Form States
     const [newBlockName, setNewBlockName] = useState('');
-    const [newLabData, setNewLabData] = useState({ name: '', blockId: '' });
+    const [newLabData, setNewLabData] = useState({ name: '', code: '', department: '', blockId: '' });
 
     const headers = { Authorization: `Bearer ${token}` };
 
     const fetchData = async () => {
         try {
             const [blocksRes, labsRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/blocks', { headers }),
-                axios.get('http://localhost:5000/api/labs', { headers })
+                axios.get('http://localhost:5000/api/structure/blocks', { headers }),
+                axios.get('http://localhost:5000/api/structure/labs', { headers })
             ]);
             setBlocks(blocksRes.data);
             setLabs(labsRes.data);
@@ -43,7 +43,7 @@ const InfrastructureManagement = () => {
     const handleCreateBlock = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/blocks/create', { name: newBlockName }, { headers });
+            await axios.post('http://localhost:5000/api/structure/blocks', { name: newBlockName }, { headers });
             toast.success("Block created");
             setNewBlockName('');
             fetchData();
@@ -55,7 +55,7 @@ const InfrastructureManagement = () => {
     const handleDeleteBlock = async (id) => {
         if (!window.confirm("Are you sure? This block must be empty.")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/blocks/${id}`, { headers });
+            await axios.delete(`http://localhost:5000/api/structure/blocks/${id}`, { headers });
             toast.success("Block deleted");
             fetchData();
         } catch (error) {
@@ -68,9 +68,9 @@ const InfrastructureManagement = () => {
     const handleCreateLab = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/labs/create', newLabData, { headers });
+            await axios.post('http://localhost:5000/api/structure/labs', newLabData, { headers });
             toast.success("Lab created");
-            setNewLabData({ name: '', blockId: '' });
+            setNewLabData({ name: '', code: '', department: '', blockId: '' });
             fetchData();
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to create lab");
@@ -80,7 +80,7 @@ const InfrastructureManagement = () => {
     const handleDeleteLab = async (id) => {
         if (!window.confirm("Are you sure? Check for assigned faculty first.")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/labs/${id}`, { headers });
+            await axios.delete(`http://localhost:5000/api/structure/labs/${id}`, { headers });
             toast.success("Lab deleted");
             fetchData();
         } catch (error) {
@@ -160,17 +160,33 @@ const InfrastructureManagement = () => {
 
                                 {/* Create Lab */}
                                 <form onSubmit={handleCreateLab} className="space-y-3 mb-6">
-                                    <div className="flex gap-2">
+                                    <div className="grid grid-cols-2 gap-3">
                                         <input
                                             type="text"
-                                            placeholder="New Lab Name"
-                                            className="flex-1 bg-bgMain border border-borderColor rounded-lg px-4 py-2 focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="Lab Name"
+                                            className="bg-bgMain border border-borderColor rounded-lg px-4 py-2 focus:ring-1 focus:ring-primary outline-none"
                                             value={newLabData.name}
                                             onChange={(e) => setNewLabData({ ...newLabData, name: e.target.value })}
                                             required
                                         />
+                                        <input
+                                            type="text"
+                                            placeholder="Code (e.g. CSE-1)"
+                                            className="bg-bgMain border border-borderColor rounded-lg px-4 py-2 focus:ring-1 focus:ring-primary outline-none"
+                                            value={newLabData.code}
+                                            onChange={(e) => setNewLabData({ ...newLabData, code: e.target.value })}
+                                            required
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Department"
+                                            className="bg-bgMain border border-borderColor rounded-lg px-4 py-2 focus:ring-1 focus:ring-primary outline-none"
+                                            value={newLabData.department}
+                                            onChange={(e) => setNewLabData({ ...newLabData, department: e.target.value })}
+                                            required
+                                        />
                                         <select
-                                            className="bg-bgMain border border-borderColor rounded-lg px-4 py-2 focus:ring-1 focus:ring-primary outline-none max-w-[150px]"
+                                            className="bg-bgMain border border-borderColor rounded-lg px-4 py-2 focus:ring-1 focus:ring-primary outline-none"
                                             value={newLabData.blockId}
                                             onChange={(e) => setNewLabData({ ...newLabData, blockId: e.target.value })}
                                             required
@@ -193,8 +209,9 @@ const InfrastructureManagement = () => {
                                             <div>
                                                 <div className="font-medium">{lab.name}</div>
                                                 <div className="text-xs text-textMuted flex items-center gap-1">
-                                                    <MapPin className="w-3 h-3" />
-                                                    {lab.block?.name || <span className="text-red-400 text-[10px]">Orphaned</span>}
+                                                    <span className="font-mono bg-white/5 px-1 rounded">{lab.code}</span>
+                                                    <MapPin className="w-3 h-3 ml-2" />
+                                                    {lab.block || <span className="text-red-400 text-[10px]">Orphaned</span>}
                                                 </div>
                                             </div>
                                             <button

@@ -13,10 +13,18 @@ console.log(`Target Server: ${SERVER_URL}`);
 // Heartbeat Function
 const sendHeartbeat = async () => {
     try {
+        // Generate dynamic metrics for simulation
+        const metrics = {
+            cpu: Math.floor(Math.random() * 80 + 10) + '%', // 10-90%
+            ram: (Math.random() * 4 + 4).toFixed(1) + ' GB', // 4.0-8.0 GB
+            temp: Math.floor(Math.random() * 40 + 35) + '°C' // 35-75°C
+        };
+
         const payload = {
-            deviceId: DEVICE_ID, 
+            deviceId: DEVICE_ID,
             roomNo: 'LAB-1', // Start with hardcoded, can be config later
-            type: 'PC'
+            type: 'PC',
+            metrics: metrics
         };
 
         const config = {

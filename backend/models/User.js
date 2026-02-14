@@ -20,11 +20,15 @@ const userSchema = new mongoose.Schema({
         enum: ['superadmin', 'admin', 'faculty', 'maintenance', 'student'],
         required: true
     },
+    assignedBlock: {
+        type: String, // Single Block Name (e.g., "Architecture Block")
+        default: null
+    },
     assignedBlocks: [{
-        type: String // Name of the Block (e.g., "Architecture Block")
+        type: String
     }],
     assignedLabs: [{
-        type: String // Name of the Lab (e.g., "Design Studio 1")
+        type: String
     }],
     isActive: {
         type: Boolean,

@@ -92,13 +92,14 @@ const Sidebar = ({ resources = [], onSelect, selectedFilter }) => {
                 <h2 className="text-[10px] font-black text-textMain uppercase tracking-[0.3em] mb-6 text-opacity-50">Infrastructure</h2>
 
                 {/* Root Node: SVVV */}
-                <div
+                <Link
+                    to="/dashboard"
                     className="flex items-center gap-2 mb-4 text-primary cursor-pointer hover:bg-primary/10 p-2 rounded transition-colors"
                     onClick={(e) => handleSelect(e, 'all', null)}
                 >
                     <School className="w-4 h-4" />
                     <span className="text-sm font-bold tracking-tight">SVVV College</span>
-                </div>
+                </Link>
 
                 <div className="space-y-1">
                     {Object.entries(hierarchy).map(([blockName, depts]) => (

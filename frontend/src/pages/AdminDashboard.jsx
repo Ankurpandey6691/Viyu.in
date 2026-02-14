@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, Activity, Power, PowerOff, Server } from 'lucide-react';
+import { Building, Users, Monitor, Activity, Server, Clock } from 'lucide-react';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -8,101 +8,95 @@ import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
     const { token, currentUser } = useAuth();
-    const [stats, setStats] = useState({
-        totalLabs: 0,
-        totalDevices: 0,
-        onlineDevices: 0,
-        offlineDevices: 0
-    });
-    const [assignedBlocks, setAssignedBlocks] = useState([]);
+    const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchOverview = async () => {
+        const fetchStats = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5000/api/admin/overview', {
+                const res = await axios.get('http://localhost:5000/api/admin/overview', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                setStats(data.stats);
-                setAssignedBlocks(data.assignedBlocks);
+                setStats(res.data);
             } catch (error) {
                 console.error("Admin Dashboard Error:", error);
-                toast.error("Failed to load dashboard data");
+                toast.error("Failed to load admin dashboard data");
             } finally {
                 setLoading(false);
             }
         };
 
-        if (token) fetchOverview();
+        if (token) fetchStats();
     }, [token]);
 
     const StatCard = ({ title, value, icon: Icon, color }) => (
-        <div className="bg-cardBg border border-borderColor p-6 rounded-xl flex items-center justify-between">
-            <div>
-                <p className="text-textMuted text-sm font-medium mb-1">{title}</p>
-                <h3 className="text-3xl font-bold text-textMain">{value}</h3>
+        <div className="bg-cardBg border border-borderColor p-6 rounded-xl relative overflow-hidden group hover:border-primary/50 transition-colors">
+            <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity ${color}`}>
+                <Icon className="w-16 h-16" />
             </div>
-            <div className={`p-3 rounded-lg bg-opacity-10 ${color.replace('text-', 'bg-')}`}>
-                <Icon className={`w-8 h-8 ${color}`} />
+            <div className="relative z-10">
+                <p className="text-textMuted text-sm font-medium uppercase tracking-wider">{title}</p>
+                <h3 className="text-3xl font-bold mt-2 text-white">{value}</h3>
             </div>
         </div>
     );
 
+    if (loading) return <div className="flex h-screen items-center justify-center bg-bgMain text-textMuted">Loading Dashboard...</div>;
+
+    if (!stats) return <div className="p-10 text-center text-red-400">Restricted Access or No Data Available</div>;
+
     return (
-        <div className="flex h-screen bg-bgMain text-textMain">
-            <Sidebar />
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <Header title="Admin Dashboard" />
+        <div className="flex h-screen bg-bgMain text-textMain overflow-hidden font-sans selection:bg-primary/30">
+            <Sidebar resources={[]} onSelect={() => { }} selectedFilter={{ type: 'all' }} />
 
-                <main className="flex-1 overflow-y-auto p-8">
-                    <div className="max-w-7xl mx-auto space-y-8">
+            <div className="flex-1 flex flex-col h-full relative min-w-0">
+                <Header isConnected={true} onlineCount={stats.stats?.onlineDevices || 0} />
 
-                        {/* Welcome Section */}
-                        <div className="flex justify-between items-end">
-                            <div>
-                                <h1 className="text-3xl font-bold mb-2">Welcome, {currentUser?.name}</h1>
-                                <p className="text-textMuted">
-                                    Managing Block: <span className="text-primary font-semibold">{assignedBlocks.join(', ')}</span>
-                                </p>
-                            </div>
+                <main className="flex-1 overflow-y-auto p-10 grid-bg custom-scrollbar relative">
+                    <div className="max-w-7xl mx-auto">
+
+                        {/* Welcome Header */}
+                        <div className="mb-10">
+                            <h1 className="text-3xl font-bold tracking-tight mb-2">Block Manager Dashboard</h1>
+                            <p className="text-textMuted flex items-center gap-2">
+                                <Building className="w-4 h-4 text-primary" />
+                                Managing Block: <span className="text-white font-semibold">{stats.assignedBlock}</span>
+                            </p>
                         </div>
 
                         {/* Stats Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                             <StatCard
                                 title="Total Labs"
-                                value={stats.totalLabs}
+                                value={stats.stats.totalLabs}
                                 icon={Server}
                                 color="text-blue-500"
                             />
                             <StatCard
                                 title="Total Devices"
-                                value={stats.totalDevices}
-                                icon={LayoutDashboard}
+                                value={stats.stats.totalDevices}
+                                icon={Monitor}
                                 color="text-purple-500"
                             />
                             <StatCard
                                 title="Online Devices"
-                                value={stats.onlineDevices}
-                                icon={Power}
-                                color="text-green-500"
+                                value={stats.stats.onlineDevices}
+                                icon={Activity}
+                                color="text-emerald-500"
                             />
                             <StatCard
                                 title="Offline Devices"
-                                value={stats.offlineDevices}
-                                icon={PowerOff}
+                                value={stats.stats.offlineDevices}
+                                icon={Clock}
                                 color="text-red-500"
                             />
                         </div>
 
-                        {/* Quick Actions or Recent Activity could go here */}
-                        <div className="bg-cardBg border border-borderColor rounded-xl p-6">
-                            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-primary" />
-                                System Status
-                            </h3>
-                            <div className="text-textMuted text-sm">
-                                System is running normally. Real-time updates active.
+                        {/* Quick Actions / Placeholders */}
+                        <div className="bg-cardBg border border-borderColor rounded-xl p-8 text-center text-textMuted opacity-50">
+                            <p>Write now we added static data for blocks/labs/pcs.</p>
+                            <div className="mt-4 flex gap-4 justify-center">
+                                {/* Links to other management pages could go here */}
                             </div>
                         </div>
 

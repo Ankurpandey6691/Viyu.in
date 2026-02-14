@@ -1,29 +1,75 @@
 const User = require("../models/User");
+const Block = require("../models/Block");
 const Resource = require("../models/Resource");
+const Lab = require("../models/Lab");
+
+// @desc    Assign a block to an Admin (Superadmin Only)
+// @route   POST /api/admin/assign-block
+// @access  Superadmin
+const assignBlock = async (req, res) => {
+    try {
+        const { adminId, blockName } = req.body;
+
+        if (!adminId || !blockName) {
+            return res.status(400).json({ message: "Admin ID and Block Name are required" });
+        }
+
+        const user = await User.findById(adminId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Verify valid block
+        const blockExists = await Block.findOne({ name: blockName });
+        if (!blockExists) {
+            return res.status(404).json({ message: "Block does not exist" });
+        }
+
+        // Assign Block (singular)
+        user.assignedBlock = blockName;
+        // Clear singular array for consistency if we ever use it
+        user.assignedBlocks = [blockName];
+
+        await user.save();
+
+        res.json({
+            message: `Block '${blockName}' assigned to ${user.name}`,
+            user: {
+                id: user._id,
+                name: user.name,
+                assignedBlock: user.assignedBlock
+            }
+        });
+
+    } catch (error) {
+        console.error("Assign Block Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
 
 // @desc    Get Admin Dashboard Overview
 // @route   GET /api/admin/overview
 // @access  Private (Admin)
 const getAdminOverview = async (req, res) => {
     try {
-        const adminBlocks = req.user.assignedBlocks; // Array of Strings
+        const assignedBlock = req.user.assignedBlock;
 
-        if (!adminBlocks || adminBlocks.length === 0) {
-            return res.status(400).json({ message: "No blocks assigned to this Admin." });
+        if (!assignedBlock) {
+            return res.status(400).json({ message: "No block assigned to this Admin." });
         }
 
         // Stats
-        const totalDevices = await Resource.countDocuments({ block: { $in: adminBlocks } });
-        const onlineDevices = await Resource.countDocuments({ block: { $in: adminBlocks }, status: 'Online' });
-        const offlineDevices = await Resource.countDocuments({ block: { $in: adminBlocks }, status: 'Offline' });
+        const totalDevices = await Resource.countDocuments({ block: assignedBlock });
+        const onlineDevices = await Resource.countDocuments({ block: assignedBlock, status: 'Online' });
+        const offlineDevices = await Resource.countDocuments({ block: assignedBlock, status: 'Offline' });
 
-        // Distinct Labs in these blocks
-        const labs = await Resource.find({ block: { $in: adminBlocks } }).distinct('lab');
+        // Distinct Labs in this block
+        const labs = await Lab.find({ block: assignedBlock }).countDocuments();
 
         res.json({
-            assignedBlocks: adminBlocks,
+            assignedBlock,
             stats: {
-                totalLabs: labs.length,
+                totalLabs: labs,
                 totalDevices,
                 onlineDevices,
                 offlineDevices
@@ -36,104 +82,7 @@ const getAdminOverview = async (req, res) => {
     }
 };
 
-const Lab = require("../models/Lab");
-
-// @desc    Get Labs for Admin's Block
-// @route   GET /api/admin/labs
-// @access  Private (Admin)
-const getAdminLabs = async (req, res) => {
-    try {
-        const adminBlocks = req.user.assignedBlocks;
-        if (!adminBlocks || adminBlocks.length === 0) {
-            return res.json([]);
-        }
-
-        // 1. Get distinct Lab IDs in these blocks
-        const labIds = await Resource.find({ block: { $in: adminBlocks } }).distinct('lab');
-
-        // 2. Fetch Lab details
-        const labs = await Lab.find({ _id: { $in: labIds } }).select("name code");
-
-        res.json(labs);
-    } catch (error) {
-        console.error("Admin Labs Error:", error);
-        res.status(500).json({ message: "Server Error" });
-    }
-};
-
-// @desc    Get Faculty in Admin's Block
-// @route   GET /api/admin/faculty
-// @access  Private (Admin)
-const getAdminFaculty = async (req, res) => {
-    try {
-        const adminBlocks = req.user.assignedBlocks;
-        if (!adminBlocks || adminBlocks.length === 0) {
-            return res.json([]);
-        }
-
-        // 1. Get all valid labs for these blocks
-        const validLabs = await Resource.find({ block: { $in: adminBlocks } }).distinct('lab');
-
-        // 2. Find Faculty assigned to ANY of these labs
-        // Note: Faculty have their scope in `assignedLabs`
-        const faculty = await User.find({
-            role: 'faculty',
-            assignedLabs: { $in: validLabs }
-        }).select('-password').sort({ createdAt: -1 });
-
-        res.json(faculty);
-
-    } catch (error) {
-        console.error("Admin Faculty Error:", error);
-        res.status(500).json({ message: "Server Error" });
-    }
-};
-
-// @desc    Update Faculty (Admin)
-// @route   PUT /api/admin/faculty/:id
-// @access  Private (Admin)
-const updateFaculty = async (req, res) => {
-    try {
-        const { assignedLabs, isActive } = req.body;
-        const facultyId = req.params.id;
-        const adminBlocks = req.user.assignedBlocks;
-
-        // 1. Verify Faculty exists and is actually in Admin's scope
-        // (i.e., currently assigned to a lab in admin's block OR new, but we are updating existing)
-        // Ideally, we should check if the target user is a faculty.
-        const faculty = await User.findOne({ _id: facultyId, role: 'faculty' });
-        if (!faculty) {
-            return res.status(404).json({ message: "Faculty not found." });
-        }
-
-        // 2. Verify Admin has authority over the *Target Labs*
-        if (assignedLabs && assignedLabs.length > 0) {
-            const validLabs = await Resource.find({ block: { $in: adminBlocks } }).distinct('lab');
-
-            // Check if all requested labs are valid
-            const allValid = assignedLabs.every(lab => validLabs.includes(lab));
-            if (!allValid) {
-                return res.status(403).json({ message: "Cannot assign labs outside your managed block." });
-            }
-            faculty.assignedLabs = assignedLabs;
-        }
-
-        if (isActive !== undefined) {
-            faculty.isActive = isActive;
-        }
-
-        await faculty.save();
-        res.json({ message: "Faculty updated successfully", faculty });
-
-    } catch (error) {
-        console.error("Update Faculty Error:", error);
-        res.status(500).json({ message: "Server Error" });
-    }
-};
-
 module.exports = {
-    getAdminOverview,
-    getAdminLabs,
-    getAdminFaculty,
-    updateFaculty
+    assignBlock,
+    getAdminOverview
 };

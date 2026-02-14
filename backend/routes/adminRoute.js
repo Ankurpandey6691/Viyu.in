@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { getAdminOverview, getAdminLabs, getAdminFaculty, updateFaculty } = require('../controllers/adminController');
+const { assignBlock, getAdminOverview } = require('../controllers/adminController');
 const { authenticate, authorizeRoles } = require('../middleware/authMiddleware');
 
 router.use(authenticate);
-router.use(authorizeRoles('admin'));
 
-router.get('/overview', getAdminOverview);
-router.get('/labs', getAdminLabs);
-router.get('/faculty', getAdminFaculty);
-router.put('/faculty/:id', updateFaculty);
+// Superadmin only
+router.post('/assign-block', authorizeRoles('superadmin'), assignBlock);
+
+// Admin only (or Superadmin)
+router.get('/overview', authorizeRoles('admin', 'superadmin'), getAdminOverview);
 
 module.exports = router;

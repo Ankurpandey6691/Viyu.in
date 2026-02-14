@@ -29,7 +29,8 @@ const UserManagement = () => {
     // Scope Assignment State
     const [scopeFormData, setScopeFormData] = useState({
         assignedBlocks: [],
-        assignedLabs: []
+        assignedLabs: [],
+        assignedBlock: '' // New singular field for Admin
     });
 
     const headers = { Authorization: `Bearer ${token}` };
@@ -141,7 +142,6 @@ const UserManagement = () => {
             });
             toast.success("Password reset successfully");
             setShowEditModal(false);
-            // Show the creds alert
         } catch (error) {
             console.error("Reset Password Error:", error);
             toast.error("Failed to reset password");
@@ -150,10 +150,10 @@ const UserManagement = () => {
 
     const openScopeModal = (user) => {
         setSelectedUser(user);
-        // Direct string mapping, no _id checks needed for strings as backend now stores strings
         setScopeFormData({
             assignedBlocks: user.assignedBlocks || [],
-            assignedLabs: user.assignedLabs || []
+            assignedLabs: user.assignedLabs || [],
+            assignedBlock: user.assignedBlock || '' // Load singular block
         });
         setShowScopeModal(true);
     };
@@ -163,7 +163,20 @@ const UserManagement = () => {
         if (!selectedUser) return;
 
         try {
-            await axios.put(`http://localhost:5000/api/users/${selectedUser._id}/assign-scope`, scopeFormData, { headers });
+            if (selectedUser.role === 'admin') {
+                // New Admin Assignment API
+                if (!scopeFormData.assignedBlock) {
+                    return toast.error("Please select a block");
+                }
+                await axios.post('http://localhost:5000/api/admin/assign-block', {
+                    adminId: selectedUser._id,
+                    blockName: scopeFormData.assignedBlock
+                }, { headers });
+            } else {
+                // Existing Faculty Assignment
+                await axios.put(`http://localhost:5000/api/users/${selectedUser._id}/assign-scope`, scopeFormData, { headers });
+            }
+
             toast.success("Scope updated successfully");
             setShowScopeModal(false);
             setSelectedUser(null);
@@ -316,9 +329,11 @@ const UserManagement = () => {
                                                         ) : (
                                                             <>
                                                                 <Building className="w-4 h-4 text-purple-500" />
-                                                                {user.assignedBlocks?.length > 0
-                                                                    ? user.assignedBlocks.map(b => b.name || b).join(', ')
-                                                                    : <span className="text-red-400 text-xs">Unassigned</span>}
+                                                                {user.assignedBlock ? (
+                                                                    <span>{user.assignedBlock}</span>
+                                                                ) : (
+                                                                    <span className="text-red-400 text-xs">Unassigned</span>
+                                                                )}
                                                             </>
                                                         )}
                                                     </div>
@@ -338,7 +353,7 @@ const UserManagement = () => {
                                                             onClick={() => openScopeModal(user)}
                                                             className="text-xs font-medium text-primary hover:text-white transition-colors bg-primary/10 px-3 py-1 rounded border border-primary/20 hover:bg-primary/20"
                                                         >
-                                                            Assign Scope
+                                                            {user.role === 'admin' ? "Assign Block" : "Assign Scope"}
                                                         </button>
                                                     </div>
                                                 )}
@@ -468,24 +483,21 @@ const UserManagement = () => {
                                 ) : (
                                     <div className="space-y-3">
                                         <label className="text-sm font-medium">Select Block (Admin/Maintenance)</label>
+                                        <p className="text-xs text-textMuted mb-2">Admins can manage exactly one block.</p>
                                         <div className="space-y-2 max-h-48 overflow-y-auto p-2 bg-bgMain rounded border border-borderColor">
                                             {blocks.map(block => (
-                                                <label key={block} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
+                                                <label key={block._id} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
                                                     <input
-                                                        type="checkbox"
-                                                        checked={scopeFormData.assignedBlocks.includes(block)}
-                                                        onChange={e => {
-                                                            const newBlocks = e.target.checked
-                                                                ? [...scopeFormData.assignedBlocks, block]
-                                                                : scopeFormData.assignedBlocks.filter(b => b !== block);
-                                                            setScopeFormData({ ...scopeFormData, assignedBlocks: newBlocks });
-                                                        }}
-                                                        className="w-4 h-4 rounded border-gray-600 bg-transparent text-primary focus:ring-primary"
+                                                        type="radio"
+                                                        name="assignedBlock"
+                                                        checked={scopeFormData.assignedBlock === block.name}
+                                                        onChange={() => setScopeFormData({ ...scopeFormData, assignedBlock: block.name })}
+                                                        className="w-4 h-4 rounded-full border-gray-600 bg-transparent text-primary focus:ring-primary"
                                                     />
-                                                    <span className="text-sm">{block}</span>
+                                                    <span className="text-sm">{block.name}</span>
                                                 </label>
                                             ))}
-                                            {blocks.length === 0 && <p className="text-xs text-textMuted">No Blocks found in Resources.</p>}
+                                            {blocks.length === 0 && <p className="text-xs text-textMuted">No Blocks found.</p>}
                                         </div>
                                     </div>
                                 )}

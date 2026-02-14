@@ -23,7 +23,9 @@ app.use(express.json());
 app.use("/api/auth", require("./routes/authRoute")); // Re-added authRoute as it's essential
 app.use('/api/users', require('./routes/userRoute'));
 app.use('/api/resources', require('./routes/resourceRoute'));
-app.use('/api/structure', require('./routes/structureRoute')); // Dynamic Structure
+app.use('/api/structure', require('./routes/structureRoute'));
+app.use('/api/admin', require('./routes/adminRoute'));
+app.use('/api/admin', require('./routes/adminRoute')); // Dynamic Structure
 app.use('/api/admin', require('./routes/adminRoute')); // Admin Operational System
 
 // Redis Client
@@ -159,38 +161,53 @@ app.get('/api/resources', authenticate, async (req, res) => {
     try {
         const Resource = require('./models/Resource');
         const Lab = require('./models/Lab');
-        const { role, assignedLabs, assignedBlocks } = req.user;
+        const { role, assignedLabs, assignedBlocks, assignedBlock } = req.user;
         let query = {};
 
-
         // Step 1: Find the IDs of the labs the user is allowed to see
-        // Match Name matches assignedLabs OR Block matches assignedBlocks
         console.log(`[DEBUG] Filtering resources for user: ${req.user.email} (${role})`);
-        console.log(`[DEBUG] Assigned Labs:`, assignedLabs);
-        console.log(`[DEBUG] Assigned Blocks:`, assignedBlocks);
 
-        const allowedLabs = await Lab.find({
-            $or: [
-                { name: { $in: assignedLabs || [] } },
-                { block: { $in: assignedBlocks || [] } }
-            ]
-        }).select('_id name');
+        // RBAC Strict Filtering
+        let labQuery = {};
 
-        console.log(`[DEBUG] Allowed Labs found: ${allowedLabs.length}`);
-        allowedLabs.forEach(l => console.log(` - ${l.name} (${l._id})`));
+        if (role === 'superadmin') {
+            // Superadmin sees all (empty query)
+        } else if (role === 'admin') {
+            // Admin sees ONLY their assigned block
+            if (!assignedBlock) {
+                console.log(`[DEBUG] Admin has no assignedBlock, returing empty.`);
+                return res.json([]);
+            }
+            // Find Labs in this block
+            // Note: Lab model currently stores 'block' as String (Block Name).
+            labQuery.block = assignedBlock;
+        } else if (role === 'faculty') {
+            // Faculty sees assignedLabs
+            // Maintain backward compatibility with assignedBlocks array if needed, but primarily labs
+            labQuery = {
+                $or: [
+                    { name: { $in: assignedLabs || [] } },
+                    { block: { $in: assignedBlocks || [] } }
+                ]
+            };
+        } else {
+            // Others (Maintenance/Student) - Define scope or return empty
+            // For now assume similar to Faculty or limited
+            labQuery = { _id: null }; // deny all
+        }
 
-        const allowedLabIds = allowedLabs.map(l => l._id);
+        let allowedLabIds = [];
+        if (role !== 'superadmin') {
+            const allowedLabs = await Lab.find(labQuery).select('_id name');
+            console.log(`[DEBUG] Allowed Labs found: ${allowedLabs.length}`);
+            allowedLabIds = allowedLabs.map(l => l._id);
 
-        // Step 2: Filter resources where 'lab' matches these IDs
-        query = {
-            lab: { $in: allowedLabIds }
-        };
+            // Step 2: Filter resources where 'lab' matches these IDs
+            query.lab = { $in: allowedLabIds };
+        }
+
         console.log(`[DEBUG] Resource Query:`, JSON.stringify(query));
         const resources = await Resource.find(query).populate('lab');
-        console.log(`[DEBUG] Resources found: ${resources.length}`);
-        if (resources.length > 0) {
-            console.log(`[DEBUG] Sample Resource Lab:`, JSON.stringify(resources[0].lab));
-        }
         res.json(resources);
     } catch (err) {
         console.error('Error fetching resources:', err);
