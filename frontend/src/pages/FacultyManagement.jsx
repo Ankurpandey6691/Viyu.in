@@ -29,8 +29,8 @@ const FacultyManagement = () => {
     const fetchData = async () => {
         try {
             const [facultyRes, labsRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/admin/faculty', { headers }),
-                axios.get('http://localhost:5000/api/admin/labs', { headers })
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/faculty`, { headers }),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/labs`, { headers })
             ]);
             setFaculty(facultyRes.data);
             setLabs(labsRes.data);
@@ -49,7 +49,7 @@ const FacultyManagement = () => {
     const handleCreateSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post('http://localhost:5000/api/users/create', formData, { headers });
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/create`, formData, { headers });
             setCreatedCreds({
                 email: data.user.email,
                 password: data.temporaryPassword
@@ -67,7 +67,7 @@ const FacultyManagement = () => {
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:5000/api/admin/faculty/${editData._id}`, {
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/faculty/${editData._id}`, {
                 assignedLabs: editData.assignedLabs,
                 isActive: editData.isActive
             }, { headers });

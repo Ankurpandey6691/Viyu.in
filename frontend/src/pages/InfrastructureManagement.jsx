@@ -21,8 +21,8 @@ const InfrastructureManagement = () => {
     const fetchData = async () => {
         try {
             const [blocksRes, labsRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/structure/blocks', { headers }),
-                axios.get('http://localhost:5000/api/structure/labs', { headers })
+                axios.get(`${import.meta.env.VITE_API_URL}/api/structure/blocks`, { headers }),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/structure/labs`, { headers })
             ]);
             setBlocks(blocksRes.data);
             setLabs(labsRes.data);
@@ -43,7 +43,7 @@ const InfrastructureManagement = () => {
     const handleCreateBlock = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/structure/blocks', { name: newBlockName }, { headers });
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/structure/blocks`, { name: newBlockName }, { headers });
             toast.success("Block created");
             setNewBlockName('');
             fetchData();
@@ -55,7 +55,7 @@ const InfrastructureManagement = () => {
     const handleDeleteBlock = async (id) => {
         if (!window.confirm("Are you sure? This block must be empty.")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/structure/blocks/${id}`, { headers });
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/structure/blocks/${id}`, { headers });
             toast.success("Block deleted");
             fetchData();
         } catch (error) {
@@ -68,7 +68,7 @@ const InfrastructureManagement = () => {
     const handleCreateLab = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/structure/labs', newLabData, { headers });
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/structure/labs`, newLabData, { headers });
             toast.success("Lab created");
             setNewLabData({ name: '', code: '', department: '', blockId: '' });
             fetchData();
@@ -80,7 +80,7 @@ const InfrastructureManagement = () => {
     const handleDeleteLab = async (id) => {
         if (!window.confirm("Are you sure? Check for assigned faculty first.")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/structure/labs/${id}`, { headers });
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/structure/labs/${id}`, { headers });
             toast.success("Lab deleted");
             fetchData();
         } catch (error) {

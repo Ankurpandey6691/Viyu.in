@@ -39,9 +39,9 @@ const UserManagement = () => {
     const fetchData = async () => {
         try {
             const [usersRes, blocksRes, labsRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/users', { headers }),
-                axios.get('http://localhost:5000/api/structure/blocks', { headers }),
-                axios.get('http://localhost:5000/api/structure/labs', { headers })
+                axios.get(`${import.meta.env.VITE_API_URL}/api/users`, { headers }),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/structure/blocks`, { headers }),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/structure/labs`, { headers })
             ]);
             setUsers(usersRes.data);
             setBlocks(blocksRes.data);
@@ -63,7 +63,7 @@ const UserManagement = () => {
     const handleCreateSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post('http://localhost:5000/api/users/create', createFormData, { headers });
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/create`, createFormData, { headers });
 
             toast.success(data.message); // "Please assign scope next"
             setCreatedUserCreds({
@@ -115,7 +115,7 @@ const UserManagement = () => {
                 payload.password = editFormData.password;
             }
 
-            await axios.put(`http://localhost:5000/api/users/${editFormData._id}`, payload, { headers });
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${editFormData._id}`, payload, { headers });
 
             toast.success("User updated successfully");
             if (editFormData.password) {
@@ -134,7 +134,7 @@ const UserManagement = () => {
         if (!window.confirm("Are you sure you want to reset this user's password? It will be auto-generated.")) return;
 
         try {
-            const { data } = await axios.post(`http://localhost:5000/api/users/${editFormData._id}/reset-password`, {}, { headers });
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/${editFormData._id}/reset-password`, {}, { headers });
             setCreatedUserCreds({
                 email: editFormData.email,
                 password: data.temporaryPassword,
@@ -168,13 +168,13 @@ const UserManagement = () => {
                 if (!scopeFormData.assignedBlock) {
                     return toast.error("Please select a block");
                 }
-                await axios.post('http://localhost:5000/api/admin/assign-block', {
+                await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/assign-block`, {
                     adminId: selectedUser._id,
                     blockName: scopeFormData.assignedBlock
                 }, { headers });
             } else {
                 // Existing Faculty Assignment
-                await axios.put(`http://localhost:5000/api/users/${selectedUser._id}/assign-scope`, scopeFormData, { headers });
+                await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${selectedUser._id}/assign-scope`, scopeFormData, { headers });
             }
 
             toast.success("Scope updated successfully");

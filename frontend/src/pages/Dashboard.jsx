@@ -11,7 +11,7 @@ import { useAuth } from '../context/AuthContext';
 
 import SkeletonCard from '../components/SkeletonCard'
 
-const SOCKET_URL = 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_API_URL;
 
 const Dashboard = () => {
     const { token } = useAuth(); // Get token
@@ -34,7 +34,7 @@ const Dashboard = () => {
         const fetchResources = async () => {
             setIsLoading(true);
             try {
-                const res = await fetch('http://localhost:5000/api/resources', {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -75,7 +75,7 @@ const Dashboard = () => {
 
         const fetchLabs = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/labs', {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/labs`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
@@ -171,7 +171,7 @@ const Dashboard = () => {
     const toggleSession = async () => {
         if (!currentLab) return;
         try {
-            await fetch('http://localhost:5000/api/labs/toggle-session', {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/labs/toggle-session`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
