@@ -25,7 +25,10 @@ const sendPing = async (deviceId, roomNo) => {
             headers: { 'x-device-token': DEVICE_SECRET }
         });
     } catch (error) {
-        // process.stdout.write('x');
+        console.error(`Error pinging ${deviceId}:`, error.message);
+        if (error.response) {
+            console.error('Status:', error.response.status, 'Data:', error.response.data);
+        }
     }
 };
 
