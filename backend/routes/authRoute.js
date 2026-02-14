@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { register, login } = require("../controllers/authController");
+const { login } = require("../controllers/authController");
 
-router.post("/register", register);
+// Public registration is disabled
+// Public registration is disabled
 router.post("/login", login);
 
 module.exports = router;

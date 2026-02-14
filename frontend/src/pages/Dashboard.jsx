@@ -7,9 +7,12 @@ import DetailsPanel from '../components/DetailsPanel'
 import { io } from 'socket.io-client'
 import { AnimatePresence } from 'framer-motion'
 
+import { useAuth } from '../context/AuthContext';
+
 const SOCKET_URL = 'http://localhost:5000';
 
 const Dashboard = () => {
+    const { token } = useAuth(); // Get token
     const [resources, setResources] = useState(new Map());
     const [lastSync, setLastSync] = useState(Date.now());
     const [isConnected, setIsConnected] = useState(false);
@@ -17,24 +20,42 @@ const Dashboard = () => {
     const [filter, setFilter] = useState({ type: 'all', value: null });
 
     useEffect(() => {
+        if (!token) return;
+
         // Fetch all resources initially
         const fetchResources = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/resources');
+                const res = await fetch('http://localhost:5000/api/resources', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        console.error("Unauthorized access to resources");
+                    }
+                    return;
+                }
+
                 const data = await res.json();
 
-                setResources(prev => {
-                    const newMap = new Map(prev);
-                    data.forEach(device => {
-                        if (!newMap.has(device.deviceId)) {
-                            newMap.set(device.deviceId, device);
-                        } else {
-                            const existing = newMap.get(device.deviceId);
-                            newMap.set(device.deviceId, { ...existing, ...device });
-                        }
+                if (Array.isArray(data)) {
+                    setResources(prev => {
+                        const newMap = new Map(prev);
+                        data.forEach(device => {
+                            if (!newMap.has(device.deviceId)) {
+                                newMap.set(device.deviceId, device);
+                            } else {
+                                const existing = newMap.get(device.deviceId);
+                                newMap.set(device.deviceId, { ...existing, ...device });
+                            }
+                        });
+                        return newMap;
                     });
-                    return newMap;
-                });
+                } else {
+                    console.warn('API returned non-array data:', data);
+                }
             } catch (err) {
                 console.error('Failed to fetch resources:', err);
             }
@@ -58,7 +79,7 @@ const Dashboard = () => {
         });
 
         return () => socket.disconnect();
-    }, []);
+    }, [token]);
 
     const resourceList = Array.from(resources.values());
 

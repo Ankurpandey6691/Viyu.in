@@ -1,12 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import {
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged
-} from 'firebase/auth';
-import { auth, googleProvider, facebookProvider } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -16,93 +11,85 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem('token'));
     const [loading, setLoading] = useState(true);
-    const [configError, setConfigError] = useState(null); // New state for config errors
     const navigate = useNavigate();
 
+    // Init Auth State from LocalStorage
     useEffect(() => {
-        if (!auth) {
-            const errorMsg = "Firebase keys are missing in .env file.";
-            setConfigError(errorMsg);
-            setLoading(false);
-            return;
+        const storedToken = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+
+        if (storedToken && storedUser) {
+            setToken(storedToken);
+            setCurrentUser(JSON.parse(storedUser));
         }
-
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user);
-            setLoading(false);
-        });
-
-        return unsubscribe;
+        setLoading(false);
     }, []);
 
-    // Signup with Google
-    const signInWithGoogle = async () => {
-        if (!auth) {
-            toast.error("Configuration Error: Missing Firebase Keys");
-            return;
-        }
+    // Login Function
+    const login = async (email, password) => {
         try {
-            const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-            toast.success(`Welcome ${user.displayName}!`);
-            navigate('/dashboard');
-        } catch (error) {
-            console.error("Google Sign-in Error:", error);
-            handleAuthError(error);
-        }
-    };
+            const { data } = await axios.post('http://localhost:5000/api/auth/login', {
+                email,
+                password
+            });
 
-    // Signup with Facebook
-    const signInWithFacebook = async () => {
-        if (!auth) {
-            toast.error("Configuration Error: Missing Firebase Keys");
-            return;
-        }
-        try {
-            const result = await signInWithPopup(auth, facebookProvider);
-            const user = result.user;
-            toast.success(`Welcome ${user.displayName}!`);
-            navigate('/dashboard');
-        } catch (error) {
-            console.error("Facebook Sign-in Error:", error);
-            handleAuthError(error);
-        }
-    };
+            // Store in LocalStorage
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify({
+                _id: data._id,
+                name: data.name,
+                email: data.email,
+                role: data.role,
+                assignedBlocks: data.assignedBlocks,
+                assignedLabs: data.assignedLabs
+            }));
 
-    // Logout
-    const logout = async () => {
-        try {
-            if (auth) {
-                await signOut(auth);
+            setToken(data.token);
+            setCurrentUser(data);
+
+            toast.success(`Welcome back, ${data.name}!`);
+
+            // Redirect based on role
+            // Requirements: superadmin/admin -> /dashboard, others -> /dashboard (for now, can be specific later)
+            // User requested: /dashboard/admin etc, but currently we only have /dashboard. 
+            // I will redirect everyone to /dashboard for now as per App.jsx structure.
+            navigate('/dashboard');
+
+            return { success: true };
+
+        } catch (error) {
+            console.error("Login Error Full:", error);
+            let msg = "Login failed";
+            if (error.response) {
+                msg = `Server Error: ${error.response.status} - ${error.response.data.message || error.response.statusText}`;
+            } else if (error.request) {
+                msg = "Network Error: No response from server. Check if backend is running.";
+            } else {
+                msg = `Error: ${error.message}`;
             }
-            localStorage.removeItem("token");
-            toast.success("Logged out successfully");
-            navigate('/auth');
-        } catch (error) {
-            console.error("Logout Error:", error);
-            toast.error("Failed to log out");
+            toast.error(msg);
+            return { success: false, error: msg };
         }
     };
 
-    const handleAuthError = (error) => {
-        let message = "Authentication failed";
-        if (error.code === 'auth/account-exists-with-different-credential') {
-            message = "Account exists with different credentials";
-        } else if (error.code === 'auth/popup-closed-by-user') {
-            message = "Popup closed by user";
-        } else if (error.code === 'auth/cancelled-popup-request') {
-            message = "Popup request cancelled";
-        }
-        toast.error(message);
+    // Logout Function
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setToken(null);
+        setCurrentUser(null);
+        toast.success("Logged out successfully");
+        navigate('/login');
     };
 
     const value = {
         currentUser,
-        signInWithGoogle,
-        signInWithFacebook,
+        token,
+        login,
         logout,
-        configError // Expose error to UI
+        isAuthenticated: !!token
     };
 
     return (

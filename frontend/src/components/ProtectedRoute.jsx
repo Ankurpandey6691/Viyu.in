@@ -1,13 +1,22 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
+import { io } from 'socket.io-client';
 
 const ProtectedRoute = () => {
-    const { currentUser } = useAuth();
-    const token = localStorage.getItem("token");
+    const { token } = useAuth();
 
-    if (!currentUser && !token) {
-        return <Navigate to="/auth" replace />;
+    useEffect(() => {
+        if (!token) {
+            // Ensure socket is disconnected if user is kicked out
+            // (Socket logic is mainly in Dashboard, but good practice)
+        }
+    }, [token]);
+
+    if (!token) {
+        return <Navigate to="/login" replace />;
     }
+
     return <Outlet />;
 };
 

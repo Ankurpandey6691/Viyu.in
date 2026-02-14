@@ -1,5 +1,5 @@
-import { Monitor } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Monitor, Users } from 'lucide-react'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext';
 
 const Header = ({ isConnected, onlineCount = 0 }) => {
@@ -56,6 +56,17 @@ const Header = ({ isConnected, onlineCount = 0 }) => {
                 </div>
 
                 <div className="h-6 w-px bg-borderColor hidden sm:block"></div>
+
+                {/* Superadmin User Management Link */}
+                {currentUser?.role === 'superadmin' && (
+                    <Link
+                        to="/dashboard/users"
+                        className="flex items-center gap-2 text-sm font-medium text-textMuted hover:text-white transition-colors mr-4"
+                    >
+                        <Users className="w-4 h-4" />
+                        Manage Users
+                    </Link>
+                )}
 
                 {/* User Avatar + Logout */}
                 {(currentUser || localStorage.getItem("token")) && (
