@@ -14,6 +14,8 @@ const getBlocks = async (req, res) => {
     }
 };
 
+const Lab = require("../models/Lab");
+
 // @desc    Get Labs for a specific Block
 // @route   GET /api/structure/labs
 // @access  Private (Authenticated)
@@ -26,9 +28,13 @@ const getLabs = async (req, res) => {
             query.block = block;
         }
 
-        // Distinct "lab" field, optionally filtered by block
-        const labs = await Resource.find(query).distinct("lab");
-        res.json(labs.filter(l => l));
+        // 1. Get distinct Lab IDs from Resources
+        const labIds = await Resource.find(query).distinct("lab");
+
+        // 2. Fetch Lab details (Name, ID) for these IDs
+        const labs = await Lab.find({ _id: { $in: labIds } }).select("name code");
+
+        res.json(labs);
     } catch (error) {
         console.error("Get Labs Error:", error);
         res.status(500).json({ message: "Server Error" });

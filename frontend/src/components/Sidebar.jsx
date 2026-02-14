@@ -12,7 +12,9 @@ const Sidebar = ({ resources = [], onSelect, selectedFilter }) => {
         resources.forEach(res => {
             const block = res.block || 'Unknown Block';
             const dept = res.department || 'General';
-            const lab = res.lab || 'General Lab';
+            // Handle populated lab object or fall back to string/default
+            const labName = (typeof res.lab === 'object' && res.lab !== null) ? res.lab.name : res.lab;
+            const lab = labName || 'General Lab';
 
             if (!tree[block]) tree[block] = {};
             if (!tree[block][dept]) tree[block][dept] = {};

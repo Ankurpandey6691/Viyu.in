@@ -22,19 +22,19 @@ const ResourceSchema = new mongoose.Schema({
         index: true
     },
     lab: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Lab',
+        required: true,
+        index: true
+    },
+    labCode: {
         type: String,
-        default: 'General Lab',
         index: true
     },
     type: {
         type: String,
         enum: ['PC', 'Projector'],
         default: 'PC'
-    },
-    status: {
-        type: String,
-        enum: ['Online', 'Offline'],
-        default: 'Offline'
     },
     lastSeen: {
         type: Date,

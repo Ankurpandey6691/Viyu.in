@@ -188,19 +188,19 @@ const FacultyManagement = () => {
                                 <label className="block text-sm font-medium mb-1">Assign Labs</label>
                                 <div className="space-y-2 max-h-40 overflow-y-auto p-2 bg-bgMain rounded border border-borderColor">
                                     {labs.map(lab => (
-                                        <label key={lab} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
+                                        <label key={lab._id} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
                                             <input
                                                 type="checkbox"
-                                                checked={formData.assignedLabs.includes(lab)}
+                                                checked={formData.assignedLabs.includes(lab._id)}
                                                 onChange={e => {
                                                     const newLabs = e.target.checked
-                                                        ? [...formData.assignedLabs, lab]
-                                                        : formData.assignedLabs.filter(l => l !== lab);
+                                                        ? [...formData.assignedLabs, lab._id]
+                                                        : formData.assignedLabs.filter(l => l !== lab._id);
                                                     setFormData({ ...formData, assignedLabs: newLabs });
                                                 }}
                                                 className="w-4 h-4 rounded border-gray-600 bg-transparent text-primary focus:ring-primary"
                                             />
-                                            <span className="text-sm">{lab}</span>
+                                            <span className="text-sm">{lab.name}</span>
                                         </label>
                                     ))}
                                     {labs.length === 0 && <p className="text-xs text-textMuted">No Labs found in your block.</p>}
@@ -247,19 +247,19 @@ const FacultyManagement = () => {
                                 <label className="block text-sm font-medium mb-1">Assign Labs</label>
                                 <div className="space-y-2 max-h-40 overflow-y-auto p-2 bg-bgMain rounded border border-borderColor">
                                     {labs.map(lab => (
-                                        <label key={lab} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
+                                        <label key={lab._id} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
                                             <input
                                                 type="checkbox"
-                                                checked={editData.assignedLabs.includes(lab)}
+                                                checked={editData.assignedLabs.includes(lab._id)}
                                                 onChange={e => {
                                                     const newLabs = e.target.checked
-                                                        ? [...editData.assignedLabs, lab]
-                                                        : editData.assignedLabs.filter(l => l !== lab);
+                                                        ? [...editData.assignedLabs, lab._id]
+                                                        : editData.assignedLabs.filter(l => l !== lab._id);
                                                     setEditData({ ...editData, assignedLabs: newLabs });
                                                 }}
                                                 className="w-4 h-4 rounded border-gray-600 bg-transparent text-primary focus:ring-primary"
                                             />
-                                            <span className="text-sm">{lab}</span>
+                                            <span className="text-sm">{lab.name}</span>
                                         </label>
                                     ))}
                                 </div>

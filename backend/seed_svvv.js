@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 const Resource = require('./models/Resource');
+const Lab = require('./models/Lab');
 
 // Hierarchical Data Structure for SVVV
 const svvvStructure = {
@@ -81,34 +82,74 @@ const seedDB = async () => {
 
         // Clear existing data
         await Resource.deleteMany({});
-        console.log('Cleared existing resources.');
+        await Lab.deleteMany({});
+        console.log('Cleared existing resources and labs.');
 
         const devices = [];
+        const labsToInsert = [];
 
-        // Generate Devices
-        svvvStructure.blocks.forEach(block => {
-            block.departments.forEach(dept => {
-                dept.labs.forEach(lab => {
-                    for (let i = 1; i <= lab.pcs; i++) {
-                        const deviceId = `${dept.name}-${lab.code}-${i.toString().padStart(2, '0')}`;
+        // Generate Devices and Labs
+        for (const block of svvvStructure.blocks) {
+            for (const dept of block.departments) {
+                for (const labData of dept.labs) {
+
+                    // Create Lab
+                    const newLab = new Lab({
+                        name: labData.name,
+                        code: labData.code,
+                        department: dept.name,
+                        block: block.name,
+                        isSessionActive: false
+                    });
+
+                    // We need to save the lab immediately to get its _id for the resources? 
+                    // Or we can just build the array and rely on finding them?
+                    // Better to insert one by one or batch insert Labs first, then map them?
+                    // Let's batch insert Labs first to be efficient, then map back.
+                    labsToInsert.push(newLab);
+                }
+            }
+        }
+
+        // Insert Labs first
+        const insertedLabs = await Lab.insertMany(labsToInsert);
+        console.log(`Successfully seeded ${insertedLabs.length} labs.`);
+
+        // Create a Map for quick Lab lookup by code
+        const labMap = new Map();
+        insertedLabs.forEach(lab => labMap.set(lab.code, lab._id));
+
+        // Generate Devices and link to Lab _id
+        for (const block of svvvStructure.blocks) {
+            for (const dept of block.departments) {
+                for (const labData of dept.labs) {
+                    const labId = labMap.get(labData.code); // Get the _id from the map
+
+                    if (!labId) {
+                        console.error(`Lab ID not found for code: ${labData.code}`);
+                        continue;
+                    }
+
+                    for (let i = 1; i <= labData.pcs; i++) {
+                        const deviceId = `${dept.name}-${labData.code}-${i.toString().padStart(2, '0')}`;
                         devices.push({
                             deviceId: deviceId,
-                            roomNo: lab.name,
+                            roomNo: labData.name,
                             block: block.name,
                             department: dept.name,
-                            lab: lab.name,
+                            lab: labId, // Use the ObjectId reference
+                            labCode: labData.code,
                             type: 'PC',
                             status: 'Offline',
                             lastSeen: new Date()
                         });
                     }
-                });
-            });
-        });
+                }
+            }
+        }
 
-        // Insert Batch
         await Resource.insertMany(devices);
-        console.log(`Successfully seeded ${devices.length} devices for ${svvvStructure.college}.`);
+        console.log(`Successfully seeded ${devices.length} devices.`);
 
         mongoose.connection.close();
     } catch (err) {

@@ -12,7 +12,7 @@ const verifyDeviceToken = (req, res, next) => {
 };
 
 router.post('/', verifyDeviceToken, async (req, res) => {
-    const { deviceId, roomNo, type } = req.body;
+    const { deviceId, roomNo, type, metrics } = req.body;
     const io = req.io;
     const redisClient = req.redisClient;
 
@@ -36,6 +36,8 @@ router.post('/', verifyDeviceToken, async (req, res) => {
                 deviceId,
                 status: 'Online',
                 roomNo, // Optional: send extra data if needed
+                type: type || 'PC',
+                metrics: metrics || {}, // Broadcast metrics
                 timestamp: Date.now()
             });
         }
@@ -49,7 +51,8 @@ router.post('/', verifyDeviceToken, async (req, res) => {
                     status: 'Online',
                     lastSeen: new Date(),
                     roomNo: roomNo || 'Unknown', // Update roomNo if provided
-                    type: type || 'PC'
+                    type: type || 'PC',
+                    metrics: metrics || {} // Save metrics to DB
                 }
             },
             { upsert: true, new: true }

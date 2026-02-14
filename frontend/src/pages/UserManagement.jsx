@@ -447,19 +447,19 @@ const UserManagement = () => {
                                         <label className="text-sm font-medium">Select Lab (Faculty)</label>
                                         <div className="space-y-2 max-h-48 overflow-y-auto p-2 bg-bgMain rounded border border-borderColor">
                                             {labs.map(lab => (
-                                                <label key={lab} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
+                                                <label key={lab._id} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
                                                     <input
                                                         type="checkbox"
-                                                        checked={scopeFormData.assignedLabs.includes(lab)}
+                                                        checked={scopeFormData.assignedLabs.includes(lab._id)}
                                                         onChange={e => {
                                                             const newLabs = e.target.checked
-                                                                ? [...scopeFormData.assignedLabs, lab]
-                                                                : scopeFormData.assignedLabs.filter(l => l !== lab);
+                                                                ? [...scopeFormData.assignedLabs, lab._id]
+                                                                : scopeFormData.assignedLabs.filter(l => l !== lab._id);
                                                             setScopeFormData({ ...scopeFormData, assignedLabs: newLabs });
                                                         }}
                                                         className="w-4 h-4 rounded border-gray-600 bg-transparent text-primary focus:ring-primary"
                                                     />
-                                                    <span className="text-sm">{lab}</span>
+                                                    <span className="text-sm">{lab.name}</span>
                                                 </label>
                                             ))}
                                             {labs.length === 0 && <p className="text-xs text-textMuted">No Labs found in Resources.</p>}

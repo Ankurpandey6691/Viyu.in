@@ -42,7 +42,7 @@ const LandingPage = () => {
                 <div className="max-w-7xl mx-auto px-6 w-full z-10 text-center flex flex-col items-center">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-borderColor text-[12px] font-medium text-textMuted mb-10">
                         <span className="w-1.5 h-1.5 rounded-full bg-viyu-green animate-pulse"></span>
-                        v4.0 Engine is now live
+                        v0.0.1 Engine is now live
                     </div>
 
                     <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-12 text-white">

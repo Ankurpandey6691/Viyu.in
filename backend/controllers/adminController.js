@@ -36,6 +36,8 @@ const getAdminOverview = async (req, res) => {
     }
 };
 
+const Lab = require("../models/Lab");
+
 // @desc    Get Labs for Admin's Block
 // @route   GET /api/admin/labs
 // @access  Private (Admin)
@@ -46,8 +48,13 @@ const getAdminLabs = async (req, res) => {
             return res.json([]);
         }
 
-        const labs = await Resource.find({ block: { $in: adminBlocks } }).distinct('lab');
-        res.json(labs.filter(l => l)); // Filter nulls
+        // 1. Get distinct Lab IDs in these blocks
+        const labIds = await Resource.find({ block: { $in: adminBlocks } }).distinct('lab');
+
+        // 2. Fetch Lab details
+        const labs = await Lab.find({ _id: { $in: labIds } }).select("name code");
+
+        res.json(labs);
     } catch (error) {
         console.error("Admin Labs Error:", error);
         res.status(500).json({ message: "Server Error" });

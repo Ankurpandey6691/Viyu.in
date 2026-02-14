@@ -1,25 +1,29 @@
-const mongoose = require("mongoose");
 
-const labSchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+
+const LabSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        trim: true
-    },
-    block: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Block',
         required: true
     },
-    createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+    code: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    },
+    department: {
+        type: String,
+        required: true
+    },
+    block: {
+        type: String,
+        required: true
+    },
+    isSessionActive: {
+        type: Boolean,
+        default: false
     }
-}, {
-    timestamps: true
 });
 
-// Enforce unique lab names PER BLOCK
-labSchema.index({ name: 1, block: 1 }, { unique: true });
-
-module.exports = mongoose.model("Lab", labSchema);
+module.exports = mongoose.model('Lab', LabSchema);

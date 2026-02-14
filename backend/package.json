@@ -18,7 +18,8 @@
     "mongoose": "^7.8.9",
     "redis": "^4.6.10",
     "socket.io": "^4.7.2",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "systeminformation": "^5.30.8"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

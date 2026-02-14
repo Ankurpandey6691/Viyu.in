@@ -9,6 +9,8 @@ import { AnimatePresence } from 'framer-motion'
 
 import { useAuth } from '../context/AuthContext';
 
+import SkeletonCard from '../components/SkeletonCard'
+
 const SOCKET_URL = 'http://localhost:5000';
 
 const Dashboard = () => {
@@ -18,12 +20,19 @@ const Dashboard = () => {
     const [isConnected, setIsConnected] = useState(false);
     const [selectedResId, setSelectedResId] = useState(null);
     const [filter, setFilter] = useState({ type: 'all', value: null });
+    const [isLoading, setIsLoading] = useState(true);
+
+    const [serverStats, setServerStats] = useState(null);
+
+    const [labs, setLabs] = useState([]);
+    const [activityLog, setActivityLog] = useState([]);
 
     useEffect(() => {
         if (!token) return;
 
         // Fetch all resources initially
         const fetchResources = async () => {
+            setIsLoading(true);
             try {
                 const res = await fetch('http://localhost:5000/api/resources', {
                     headers: {
@@ -58,23 +67,76 @@ const Dashboard = () => {
                 }
             } catch (err) {
                 console.error('Failed to fetch resources:', err);
+            } finally {
+                // Add a small delay for aesthetic effect if it's too fast, or just set false
+                setTimeout(() => setIsLoading(false), 800);
+            }
+        };
+
+        const fetchLabs = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/labs', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                setLabs(data);
+            } catch (err) {
+                console.error('Failed to fetch labs:', err);
             }
         };
 
         fetchResources();
+        fetchLabs();
 
         const socket = io(SOCKET_URL);
 
         socket.on('connect', () => setIsConnected(true));
         socket.on('disconnect', () => setIsConnected(false));
 
+        socket.on('connect_error', (err) => { });
+
         socket.on('status_update', (data) => {
+            console.log('Socket Status Update:', data); // DEBUG LOG
             setLastSync(Date.now());
             setResources(prev => {
                 const newMap = new Map(prev);
                 const existing = newMap.get(data.deviceId) || {};
                 newMap.set(data.deviceId, { ...existing, ...data, lastSeen: Date.now() });
                 return newMap;
+            });
+
+            // Add to Activity Log
+            setActivityLog(prev => {
+                const newLog = {
+                    type: 'status',
+                    deviceId: data.deviceId,
+                    status: data.status,
+                    timestamp: Date.now(),
+                    id: Date.now() + Math.random() // Unique ID
+                };
+                return [newLog, ...prev].slice(0, 50); // Keep last 50
+            });
+        });
+
+        socket.on('system_stats', (stats) => {
+            setServerStats(stats);
+        });
+
+        socket.on('lab_session_update', (data) => {
+            setLabs(prevLabs => prevLabs.map(lab =>
+                lab.code === data.labCode ? { ...lab, isSessionActive: data.isSessionActive } : lab
+            ));
+
+            // Add Log
+            setActivityLog(prev => {
+                const newLog = {
+                    type: 'session',
+                    labCode: data.labCode,
+                    active: data.isSessionActive,
+                    timestamp: Date.now(),
+                    id: Date.now() + Math.random()
+                };
+                return [newLog, ...prev].slice(0, 50);
             });
         });
 
@@ -88,16 +150,39 @@ const Dashboard = () => {
         if (filter.type === 'all') return true;
         if (filter.type === 'block') return res.block === filter.value;
         if (filter.type === 'department') return res.department === filter.value;
-        if (filter.type === 'lab') return res.lab === filter.value;
+        if (filter.type === 'lab') {
+            const labName = typeof res.lab === 'object' ? res.lab?.name : res.lab;
+            return labName === filter.value;
+        }
         return true;
     });
 
     const onlineCount = filteredResources.filter(r => r.status === 'Online').length;
     const selectedResource = resources.get(selectedResId);
 
+    // Current Lab Context (if selected)
+    const currentLab = filter.type === 'lab' ? labs.find(l => l.name === filter.value) : null;
+
     const handleFilterSelect = (type, value) => {
         setFilter({ type, value });
         setSelectedResId(null); // Deselect when changing view
+    };
+
+    const toggleSession = async () => {
+        if (!currentLab) return;
+        try {
+            await fetch('http://localhost:5000/api/labs/toggle-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ labCode: currentLab.code })
+            });
+            // State update will happen via socket
+        } catch (err) {
+            console.error('Failed to toggle session:', err);
+        }
     };
 
     return (
@@ -135,27 +220,55 @@ const Dashboard = () => {
                                         </>
                                     )}
                                 </nav>
-                                <h2 className="text-4xl font-black text-textMain tracking-tighter uppercase">
-                                    {filter.value || 'SVVV Overview'} <span className="text-zinc-700 font-light ml-3">/ Resources</span>
+                                <h2 className="text-4xl font-black text-textMain tracking-tighter uppercase flex items-center gap-4">
+                                    {filter.value || 'SVVV Overview'}
+                                    {currentLab && (
+                                        <button
+                                            onClick={toggleSession}
+                                            className={`text-xs px-4 py-2 rounded-full font-bold tracking-widest uppercase transition-all ${currentLab.isSessionActive
+                                                ? 'bg-viyu-green text-black hover:bg-viyu-green/80'
+                                                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                                }`}
+                                        >
+                                            {currentLab.isSessionActive ? 'Session Active' : 'Start Session'}
+                                        </button>
+                                    )}
+                                    <span className="text-zinc-700 font-light ml-3">/ Resources</span>
                                 </h2>
                             </div>
                         </div>
 
                         {/* Stats Bar */}
-                        <StatsOverview totalAssets={filteredResources.length} onlineCount={onlineCount} />
+                        <StatsOverview totalAssets={filteredResources.length} onlineCount={onlineCount} serverStats={serverStats} isLoading={isLoading} />
 
                         {/* Resource Grid */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
-                            {filteredResources.map((res) => (
-                                <ResourceCard
-                                    key={res.deviceId}
-                                    device={res}
-                                    isSelected={selectedResId === res.deviceId}
-                                    onClick={() => setSelectedResId(res.deviceId === selectedResId ? null : res.deviceId)}
-                                />
+
+                            {/* Loading State: Skeletons */}
+                            {isLoading && Array(12).fill(0).map((_, i) => (
+                                <SkeletonCard key={i} />
                             ))}
 
-                            {filteredResources.length === 0 && (
+                            {!isLoading && filteredResources.map(device => {
+                                // Find lab for this device to check session status
+                                // If we are in "Lab" view, we have currentLab.
+                                // If not, we need to find the lab from the `labs` array.
+                                const labName = typeof device.lab === 'object' ? device.lab?.name : device.lab;
+                                const deviceLab = labs.find(l => l.name === labName);
+                                const isSessionActive = deviceLab ? deviceLab.isSessionActive : false;
+
+                                return (
+                                    <ResourceCard
+                                        key={device.deviceId}
+                                        device={device}
+                                        isSelected={selectedResId === device.deviceId}
+                                        onClick={() => setSelectedResId(device.deviceId === selectedResId ? null : device.deviceId)}
+                                        labSessionActive={isSessionActive}
+                                    />
+                                );
+                            })}
+
+                            {!isLoading && filteredResources.length === 0 && (
                                 <div className="col-span-full py-20 text-center border border-dashed border-borderColor rounded-sm">
                                     <p className="text-textMuted uppercase tracking-widest text-xs">No devices found in this view</p>
                                 </div>
@@ -165,15 +278,12 @@ const Dashboard = () => {
                 </main>
             </div>
 
-            {/* Pane 3: Details Panel */}
-            <AnimatePresence>
-                {selectedResId && (
-                    <DetailsPanel
-                        resource={selectedResource}
-                        onClose={() => setSelectedResId(null)}
-                    />
-                )}
-            </AnimatePresence>
+            {/* Pane 3: Details Panel (Always Visible for Logs or Details) */}
+            <DetailsPanel
+                resource={selectedResource}
+                activityLog={activityLog}
+                onClose={() => setSelectedResId(null)}
+            />
 
         </div>
     )

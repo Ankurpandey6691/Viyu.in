@@ -86,7 +86,7 @@ const Login = () => {
                 </div>
 
                 <div className="text-center mt-8 text-xs text-textMuted">
-                    <p>Restricted Access System v4.0</p>
+                    <p>Restricted Access System v0.0.1</p>
                     <p className="mt-1">Unauthorized access attempts are logged.</p>
                 </div>
             </div>

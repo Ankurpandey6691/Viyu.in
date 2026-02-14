@@ -93,6 +93,8 @@ app.get('/', (req, res) => {
 });
 
 // Socket.io Connection
+const si = require('systeminformation');
+
 io.on('connection', (socket) => {
     console.log('New Client Connected:', socket.id);
     socket.on('disconnect', () => {
@@ -100,7 +102,37 @@ io.on('connection', (socket) => {
     });
 });
 
+// Broadcast System Stats every 5 seconds
+setInterval(async () => {
+    try {
+        const networkStats = await si.networkStats();
+        // networkStats is an array of interfaces. We generally want the active one.
+        // For simplicity, we'll sum up rx/tx of all interfaces or pick the first active one.
+        // For now, let's just send the first non-internal one.
+
+        const activeInterface = networkStats.find(iface => !iface.internal && iface.operstate === 'up') || networkStats[0];
+
+        if (activeInterface) {
+            io.emit('system_stats', {
+                rx_sec: activeInterface.rx_sec, // bytes per second
+                tx_sec: activeInterface.tx_sec,
+                iface: activeInterface.iface
+            });
+        }
+    } catch (e) {
+        console.error('Error fetching system stats:', e);
+    }
+}, 5000);
+
 const { authenticate, authorizeScope, authorizeRoles } = require('./middleware/authMiddleware');
+
+const labRoutes = require('./routes/labRoute');
+
+// Inject io into request for lab routes
+app.use('/api/labs', (req, res, next) => {
+    req.io = io;
+    next();
+}, labRoutes);
 
 // Resources Endpoint
 // Protected: Only authenticated users. 
@@ -126,7 +158,39 @@ app.get('/api/resources/:block/:lab', authenticate, authorizeScope, async (req, 
 app.get('/api/resources', authenticate, async (req, res) => {
     try {
         const Resource = require('./models/Resource');
-        const resources = await Resource.find({});
+        const Lab = require('./models/Lab');
+        const { role, assignedLabs, assignedBlocks } = req.user;
+        let query = {};
+
+
+        // Step 1: Find the IDs of the labs the user is allowed to see
+        // Match Name matches assignedLabs OR Block matches assignedBlocks
+        console.log(`[DEBUG] Filtering resources for user: ${req.user.email} (${role})`);
+        console.log(`[DEBUG] Assigned Labs:`, assignedLabs);
+        console.log(`[DEBUG] Assigned Blocks:`, assignedBlocks);
+
+        const allowedLabs = await Lab.find({
+            $or: [
+                { name: { $in: assignedLabs || [] } },
+                { block: { $in: assignedBlocks || [] } }
+            ]
+        }).select('_id name');
+
+        console.log(`[DEBUG] Allowed Labs found: ${allowedLabs.length}`);
+        allowedLabs.forEach(l => console.log(` - ${l.name} (${l._id})`));
+
+        const allowedLabIds = allowedLabs.map(l => l._id);
+
+        // Step 2: Filter resources where 'lab' matches these IDs
+        query = {
+            lab: { $in: allowedLabIds }
+        };
+        console.log(`[DEBUG] Resource Query:`, JSON.stringify(query));
+        const resources = await Resource.find(query).populate('lab');
+        console.log(`[DEBUG] Resources found: ${resources.length}`);
+        if (resources.length > 0) {
+            console.log(`[DEBUG] Sample Resource Lab:`, JSON.stringify(resources[0].lab));
+        }
         res.json(resources);
     } catch (err) {
         console.error('Error fetching resources:', err);

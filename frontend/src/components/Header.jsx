@@ -33,7 +33,7 @@ const Header = ({ isConnected, onlineCount = 0 }) => {
                 </div>
 
                 <h1 className="text-sm font-bold tracking-[0.2em] text-textMain uppercase">
-                    System.Monitor <span className="text-textMuted font-light ml-2">v4.0</span>
+                    System.Monitor <span className="text-textMuted font-light ml-2">v0.0.1</span>
                 </h1>
             </div>
 
